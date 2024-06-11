@@ -10,40 +10,18 @@ public enum TokenType
     LESS_EQUALS, GREATER_EQUALS,
     LESS_THAN, GREATER_THAN,
     EQUALS, DOUBLE_EQUALS,
+    NOT_EQUALS, IDENTIFIER,
 
-    BAD, 
+    STRING_LITERAL, NUMBER,
+
+    IF, FOR, TRUE, FALSE, NULL, PRINT,
+
+    VAR,
+
+    BAD,
     WHITESPACE,
     NEWLINE,
     EOF
-}
-
-public class Token 
-{
-    public TokenType Type;
-    public object Value;
-    public string Text;
-    public int Line;
-
-    public Token(TokenType type, object value, string text, int line)
-    {
-        Type = type;
-        Value = value;
-        Text = text;
-        Line = line;
-    }
-
-    public override string ToString()
-    {
-        int typeWidth = 15;
-        int valueWidth = 15;
-        int textWidth = 15;
-
-        string typeStr = Type.ToString().PadRight(typeWidth);
-        string valueStr = (Value?.ToString() ?? "null").PadRight(valueWidth);
-        string textStr = Text.PadRight(textWidth);
-
-        return $"{typeStr} | value: {valueStr} | text: {textStr} | line: {Line}";
-    }
 }
 
 internal class Scanner
@@ -67,7 +45,6 @@ internal class Scanner
         while (!IsEndOfFile()) 
         {
             Start = Current;
-
             ScanToken();
         }
 
@@ -115,7 +92,29 @@ internal class Scanner
             case '=': AddToken(Match('=') ? TokenType.DOUBLE_EQUALS : TokenType.EQUALS);
                 break;
 
+            case '!': AddToken(Match('=') ? TokenType.NOT_EQUALS : TokenType.BAD);
+                break;
+
+
+            case '"':
+                while (!Match('"')) 
+                    Advance();
+
+                string value = Source.Substring(Start + 1, Current - 1);
+                AddToken(TokenType.STRING_LITERAL, value);
+                break;
+
+            case 'v':
+                if (Current + 3 < Source.Length && Source.Substring(Current, 4) == "var ")
+                {
+                    Advance(3);
+                    AddToken(TokenType.VAR);
+                }
+                break;
+
+
             case '\r':
+            case '\t':
                 break;
 
             case '\n':
@@ -125,22 +124,60 @@ internal class Scanner
             case ' ': AddToken(TokenType.WHITESPACE);
                 break;
 
-            default: AddToken(TokenType.BAD); 
+            default:
+                if (char.IsDigit(c))
+                    TokenizeNumber();
+                
+                else if (char.IsLetter(c))
+                    TokenizeLetter();
+
+                else
+                    AddToken(TokenType.BAD);
+
                 break;
+
         }
 
         Advance();
     }
 
-    public void AddToken(TokenType type, string text = null)
+    private void TokenizeNumber() 
+    {
+        bool hasDecimal = false;
+
+        while (char.IsDigit(Peek()) || (Peek() == '.' && !hasDecimal))
+        {
+            if (Peek() == '.')
+            {
+                if (hasDecimal)
+                {
+                    AddToken(TokenType.BAD);
+                    return;
+                }
+
+                hasDecimal = true;
+            }
+
+            Advance();
+        }
+
+        AddToken(TokenType.NUMBER);
+    }
+
+    private void TokenizeLetter() 
+    {
+        while (char.IsLetter(Peek()))
+            Advance();
+
+        AddToken(TokenType.IDENTIFIER);
+    }
+
+    private void AddToken(TokenType type, string? text = null)
     {
         if (text == null)
         {
-            int length = Current - Start;
-
-            text = length != 0 ? 
-                Source.Substring(Start, length + 1) : 
-                Source[Current].ToString();
+            int length = Math.Min(Current - Start, Source.Length - Start);
+            text = length != 0 ? Source.Substring(Start, length) : Source[Current].ToString();
         }
 
         Tokens.Add(new Token(type, null, text, Line));
@@ -149,6 +186,11 @@ internal class Scanner
     private void Advance() 
     {
         Current++;
+    }
+
+    private void Advance(int n) 
+    {
+        Current += n;
     }
 
     private bool Match(char expected)
@@ -168,5 +210,5 @@ internal class Scanner
         return Source[Current];
     }
 
-    public bool IsEndOfFile() => Current >= Source.Length;
+    private bool IsEndOfFile() => Current >= Source.Length;
 }
