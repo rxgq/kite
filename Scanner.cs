@@ -164,12 +164,14 @@ internal class Scanner
         AddToken(TokenType.NUMBER);
     }
 
-    private void TokenizeLetter() 
+    private void TokenizeLetter()
     {
         while (char.IsLetter(Peek()))
             Advance();
 
-        AddToken(TokenType.IDENTIFIER);
+        string text = Source[Start..Current];
+        TokenType type = Token.Keywords.ContainsKey(text) ? Token.Keywords[text] : TokenType.IDENTIFIER;
+        AddToken(type);
     }
 
     private void AddToken(TokenType type, string? text = null)
