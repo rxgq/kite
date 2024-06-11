@@ -85,51 +85,34 @@ internal class Scanner
 
         switch (c)
         {
-            case '+':
-                if (Match('='))
-                    AddToken(TokenType.PLUS_EQUALS);
-                else
-                    AddToken(TokenType.PLUS);
+            case '+': AddToken(Match('=') ? TokenType.PLUS_EQUALS : TokenType.PLUS);
                 break;
 
-            case '-':
-                if (Match('='))
-                    AddToken(TokenType.MINUS_EQUALS);
-                else
-                    AddToken(TokenType.MINUS);
+            case '-': AddToken(Match('=') ? TokenType.MINUS_EQUALS : TokenType.MINUS);
                 break;
-            case '*':
-                if (Match('='))
-                    AddToken(TokenType.STAR_EQUALS);
-                else
-                    AddToken(TokenType.STAR);
+
+            case '*': AddToken(Match('=') ? TokenType.STAR_EQUALS : TokenType.PLUS);
                 break;
+
             case '/':
                 if (Match('='))
                     AddToken(TokenType.SLASH_EQUALS);
+
+                else if (Match('/')) 
+                    while (Peek() != '\n' && !IsEndOfFile()) 
+                        Advance();
                 else
                     AddToken(TokenType.SLASH);
+
                 break;
 
-            case '<':
-                if (Match('='))
-                    AddToken(TokenType.LESS_EQUALS);
-                else 
-                    AddToken(TokenType.LESS_THAN);
+            case '<': AddToken(Match('=') ? TokenType.LESS_EQUALS : TokenType.LESS_THAN);
                 break;
 
-            case '>':
-                if (Match('='))
-                    AddToken(TokenType.GREATER_EQUALS);
-                else
-                    AddToken(TokenType.GREATER_THAN);
+            case '>': AddToken(Match('=') ? TokenType.GREATER_EQUALS : TokenType.GREATER_THAN);
                 break;
 
-            case '=':
-                if (Match('='))
-                    AddToken(TokenType.DOUBLE_EQUALS);
-                else
-                    AddToken(TokenType.EQUALS);
+            case '=': AddToken(Match('=') ? TokenType.DOUBLE_EQUALS : TokenType.EQUALS);
                 break;
 
             case '\r':
@@ -139,8 +122,7 @@ internal class Scanner
                 Line++;
                 break;
 
-            case ' ':
-                AddToken(TokenType.WHITESPACE);
+            case ' ': AddToken(TokenType.WHITESPACE);
                 break;
 
             default: AddToken(TokenType.BAD); 
@@ -156,14 +138,9 @@ internal class Scanner
         {
             int length = Current - Start;
 
-            if (length != 0)
-            {
-                text = Source.Substring(Start, length + 1);
-            }
-            else 
-            {
-                text = Source[Current].ToString();
-            }
+            text = length != 0 ? 
+                Source.Substring(Start, length + 1) : 
+                Source[Current].ToString();
         }
 
         Tokens.Add(new Token(type, null, text, Line));
