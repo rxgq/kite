@@ -1,13 +1,15 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace judas_script;
+﻿namespace judas_script;
 
 public enum TokenType
 {
-    PLUS,
-    MINUS,
-    STAR,
-    SLASH, 
+    PLUS, PLUS_EQUALS,
+    MINUS, MINUS_EQUALS,
+    STAR, STAR_EQUALS,
+    SLASH, SLASH_EQUALS,
+
+    LESS_EQUALS, GREATER_EQUALS,
+    LESS_THAN, GREATER_THAN,
+    EQUALS, DOUBLE_EQUALS,
 
     BAD, 
     WHITESPACE,
@@ -32,9 +34,9 @@ public class Token
 
     public override string ToString()
     {
-        int typeWidth = 10;
-        int valueWidth = 10;
-        int textWidth = 10;
+        int typeWidth = 15;
+        int valueWidth = 15;
+        int textWidth = 15;
 
         string typeStr = Type.ToString().PadRight(typeWidth);
         string valueStr = (Value?.ToString() ?? "null").PadRight(valueWidth);
@@ -64,10 +66,12 @@ internal class Scanner
     {
         while (!IsEndOfFile()) 
         {
+            Start = Current;
+
             ScanToken();
         }
 
-        AddToken(TokenType.EOF);
+        AddToken(TokenType.EOF, "");
 
         return Tokens;
     }
@@ -77,27 +81,66 @@ internal class Scanner
         if (IsEndOfFile())
             return;
 
-        switch (Source[Current])
+        char c = Source[Current];
+
+        switch (c)
         {
-            case '+': AddToken(TokenType.PLUS);
+            case '+':
+                if (Match('='))
+                    AddToken(TokenType.PLUS_EQUALS);
+                else
+                    AddToken(TokenType.PLUS);
                 break;
 
-            case '-': AddToken(TokenType.MINUS);
+            case '-':
+                if (Match('='))
+                    AddToken(TokenType.MINUS_EQUALS);
+                else
+                    AddToken(TokenType.MINUS);
+                break;
+            case '*':
+                if (Match('='))
+                    AddToken(TokenType.STAR_EQUALS);
+                else
+                    AddToken(TokenType.STAR);
+                break;
+            case '/':
+                if (Match('='))
+                    AddToken(TokenType.SLASH_EQUALS);
+                else
+                    AddToken(TokenType.SLASH);
                 break;
 
-            case '*': AddToken(TokenType.STAR);
+            case '<':
+                if (Match('='))
+                    AddToken(TokenType.LESS_EQUALS);
+                else 
+                    AddToken(TokenType.LESS_THAN);
                 break;
 
-            case '/': AddToken(TokenType.SLASH);
+            case '>':
+                if (Match('='))
+                    AddToken(TokenType.GREATER_EQUALS);
+                else
+                    AddToken(TokenType.GREATER_THAN);
                 break;
 
-            case ' ': AddToken(TokenType.WHITESPACE);
+            case '=':
+                if (Match('='))
+                    AddToken(TokenType.DOUBLE_EQUALS);
+                else
+                    AddToken(TokenType.EQUALS);
                 break;
 
             case '\r':
                 break;
+
             case '\n':
                 Line++;
+                break;
+
+            case ' ':
+                AddToken(TokenType.WHITESPACE);
                 break;
 
             default: AddToken(TokenType.BAD); 
@@ -107,15 +150,37 @@ internal class Scanner
         Advance();
     }
 
-    public void AddToken(TokenType type)
+    public void AddToken(TokenType type, string text = null)
     {
-        string text = (Current < Source.Length) ? Source[Current].ToString() : "";
+        if (text == null)
+        {
+            int length = Current - Start;
+
+            if (length != 0)
+            {
+                text = Source.Substring(Start, length + 1);
+            }
+            else 
+            {
+                text = Source[Current].ToString();
+            }
+        }
+
         Tokens.Add(new Token(type, null, text, Line));
     }
 
     private void Advance() 
     {
         Current++;
+    }
+
+    private bool Match(char expected)
+    {
+        if (IsEndOfFile() || Source[Current + 1] != expected)
+            return false;
+
+        Current++;
+        return true;
     }
 
     private char Peek()
