@@ -13,5 +13,8 @@ internal class Program
         foreach (var token in tokens) {
             Console.WriteLine(token.ToString());
         }
+
+        Parser parser = new(tokens);
+        parser.Parse();
     }
 }

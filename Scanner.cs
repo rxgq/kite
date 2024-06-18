@@ -117,11 +117,12 @@ internal class Scanner
             case '\t':
                 break;
 
-            case '\n':
-                Line++;
+            case '\n': Line++;
                 break;
 
-            case ' ': AddToken(TokenType.WHITESPACE);
+            /*            case ' ': AddToken(TokenType.WHITESPACE);
+                            break;*/
+            case ' ':
                 break;
 
             default:
@@ -185,15 +186,9 @@ internal class Scanner
         Tokens.Add(new Token(type, null, text, Line));
     }
 
-    private void Advance() 
-    {
-        Current++;
-    }
+    private void Advance() => Current++;
 
-    private void Advance(int n) 
-    {
-        Current += n;
-    }
+    private void Advance(int n) => Current += n;
 
     private bool Match(char expected)
     {
