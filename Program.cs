@@ -1,20 +1,19 @@
-﻿namespace judas_script;
+﻿using System.Linq.Expressions;
+
+namespace judas_script;
 
 internal class Program
 {
     static void Main(string[] args)
     {
-        var path = "C:\\Users\\adunderdale\\test.txt";
-        var lines = File.ReadAllText(path);
+        var lines = File.ReadAllText("C:\\Users\\adunderdale\\test.txt");
 
-        Scanner scanner = new(source: lines);
-        var tokens = scanner.Scan();
+        var lexer = new Lexer(lines);
+        var tokens = lexer.Tokenize();
 
-        foreach (var token in tokens) {
-            Console.WriteLine(token.ToString());
-        }
+        foreach (var token in tokens) 
+            Console.Write(token.ToString());
 
-        Parser parser = new(tokens);
-        parser.Parse();
+        // parser
     }
 }
