@@ -5,9 +5,13 @@ enum TokenType
     OPERATOR,
     STRING, NUMBER,
 
+    IDENTIFIER, KEYWORD,
+    BOOLEAN, NULL
+
     WHITESPACE, NEWLINE,
     BAD, EOF,
 }
+
 
 internal class Token
 {
@@ -19,6 +23,20 @@ internal class Token
         Type = type;
         Value = value;
     }
+
+    internal static readonly Dictionary<string, TokenType> Keywords = new()
+    {
+        { "and", TokenType.KEYWORD },
+        { "or", TokenType.KEYWORD },
+        { "not", TokenType.KEYWORD },
+        { "true", TokenType.BOOLEAN },
+        { "false", TokenType.BOOLEAN },
+        { "is", TokenType.KEYWORD },
+        { "if", TokenType.KEYWORD },
+        { "else if", TokenType.KEYWORD },
+        { "else", TokenType.KEYWORD },
+        { "null", TokenType.NULL },
+    };
 
     public override string ToString()
         => $"\nType: {Type,-16} || Value: {Value,-16}";
@@ -91,7 +109,7 @@ internal class Lexer
                 break;
 
             default:
-                OnBadToken();
+                OnIdentifier();
                 break;
         }
     }
@@ -145,5 +163,18 @@ internal class Lexer
             Advance();
 
         Tokens.Add(new Token(TokenType.NUMBER, CurrentChars()));
+    }
+
+    private void OnIdentifier() 
+    {
+        while (char.IsLetterOrDigit(Source[Current]) && !IsEndOfFile())
+            Advance();
+
+        var token = CurrentChars().Trim();
+        if (Token.Keywords.TryGetValue(token, out TokenType tokenType))
+            Tokens.Add(new Token(tokenType, token));
+        
+        else
+            OnBadToken();
     }
 }
