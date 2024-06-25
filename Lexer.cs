@@ -1,6 +1,6 @@
 ﻿namespace judas_script;
 
-enum TokenType
+public enum TokenType
 {
     PLUS, MINUS, STAR, SLASH, MOD,
     PLUS_EQUALS, MINUS_EQUALS, STAR_EQUALS, SLASH_EQUALS, MOD_EQUALS,
@@ -21,7 +21,7 @@ enum TokenType
 }
 
 
-internal sealed class Token
+public sealed class Token
 {
     public TokenType Type { get; }
     public object? Value { get; }
@@ -185,7 +185,7 @@ internal sealed class Lexer
         Advance();
 
         string lexeme = CurrentChars();
-        string value = lexeme.Substring(1, lexeme.Length - 2);
+        string value = lexeme[1..^1];
 
         Tokens.Add(new Token(TokenType.STRING, value, lexeme));
     }

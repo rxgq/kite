@@ -1,147 +1,86 @@
-﻿using System.Globalization;
+﻿namespace judas_script;
 
-namespace judas_script;
-
-public enum ExprType
-{ 
-    Binary,
-    Numeric,
-    Identifier,
-    Program
-}
-
-internal abstract class Stmt 
-{ 
-    public ExprType Type;
-}
-
-internal class ProgramStmt : Stmt 
+public sealed class Parser
 {
-    public List<Stmt> Body = new();
+    private readonly List<Token> Tokens;
+    private int Current = 0;
 
-    public ProgramStmt()
-    {
-        Type = ExprType.Program;
-    }
-
-    public override string ToString()
-    {
-        Console.Write($"\nType: {Type,-16}");
-        foreach (var expr in Body)
-        {
-            Console.Write($"\nType: {expr.Type,-16}");
-        }
-        return "";
-    }
-}
-
-internal abstract class Expr : Stmt {}
-
-internal class Binary : Expr 
-{
-    public ExprType ExprType = ExprType.Binary;
-    public Expr Left;
-    public Expr Right;
-    public string Operator;
-}
-
-internal class Identifer : Expr
-{
-    public ExprType ExprType = ExprType.Identifier;
-    public string Symbol;
-
-    public Identifer(string symbol) 
-    {
-        Symbol = symbol;
-    }
-
-    public override string ToString()
-        => $"\nType: {ExprType, -16} || Symbol: {Symbol, -16}";
-}
-
-internal class Numeric : Expr
-{
-    public ExprType ExprType = ExprType.Numeric;
-    public float Value;
-
-    public Numeric(float value) 
-    {
-        Value = value;
-    }
-
-    public override string ToString()
-        => $"\nType: {ExprType,-16} || Value: {Value,-16}";
-}
-
-
-internal class Parser
-{
-    public readonly List<Token> Tokens;
-    public int Current = -1;
-
-    public Parser(List<Token> tokens) 
+    public Parser(List<Token> tokens)
     {
         Tokens = tokens;
     }
 
-    public ProgramStmt Parse() 
+    public void Parse()
     {
-        var program = new ProgramStmt();
-
         while (!IsEOFToken())
         {
-            Advance();
-
-            if (Tokens[Current].Type == TokenType.EOF)
-                continue;
-
-            var stmt = ParseStmt();
-            program.Body.Add(stmt);
-            Console.Write(stmt.ToString());
+            Expr expression = ParseExpression();
+            Console.WriteLine(expression);
         }
-
-        return program;
     }
 
-    private Expr ParseStmt() 
+    private Expr ParseExpression()
     {
-        return ParseExpr();
+        return ParseBinary();
     }
 
-    private Expr ParseExpr() 
+    private Expr ParseBinary(int precedence = 0)
     {
-        return Additive();
-    }
+        Expr left = ParsePrimary();
 
-    private Expr Additive() 
-    {
-        var left = Primary();
-
-        while (Tokens[Current].Lexeme == "+" || Tokens[Current].Lexeme == "-")
+        while (!IsEOFToken() && Precedence(CurrentToken()) >= precedence)
         {
-        
+            Token operatorToken = Advance();
+
+            Expr right = ParseBinary(Precedence(operatorToken) + 1);
+            left = new BinaryExpr(left, right, operatorToken.Lexeme);
         }
 
-
-        return new Binary();
+        return left;
     }
 
-    private Expr Primary() 
+    private Expr ParsePrimary()
     {
-        var token = Tokens[Current];
+        Token token = Advance();
 
         return token.Type switch
         {
-            TokenType.IDENTIFIER => new Identifer(token.Value.ToString()),
-            TokenType.NUMBER => new Numeric(float.Parse(token.Value.ToString(), CultureInfo.InvariantCulture)),
-            
-            _ => new Identifer(""),
+            TokenType.NUMBER => new NumericExpr(double.Parse(token.Lexeme)),
+            TokenType.IDENTIFIER => new IdentifierExpr(token.Lexeme),
+            _ => new UnknownExpr(),
         };
     }
 
+    private Token Advance()
+    {
+        if (!IsEOFToken()) 
+            Current++;
 
-    public void Advance() => Current++;
+        return Previous();
+    }
 
-    public bool IsEOFToken()
-        => Current != -1 && Tokens[Current].Type == TokenType.EOF; 
+    private Token Previous()
+        => Tokens[Current - 1];
+
+    private Token CurrentToken()
+        => Tokens[Current];
+
+    private bool IsEOFToken()
+        => Tokens[Current].Type == TokenType.EOF;
+
+    private static int Precedence(Token token)
+    {
+        return token.Type switch
+        {
+            TokenType.PLUS or TokenType.MINUS => 1,
+
+            TokenType.STAR or TokenType.SLASH or TokenType.MOD => 2,
+
+            TokenType.GREATER_THAN or TokenType.LESS_THAN or 
+            TokenType.GREATER_THAN_EQUALS or TokenType.LESS_THAN_EQUALS or 
+            TokenType.EQUALS or TokenType.NOT_EQUALS => 3,
+
+            _ => 0,
+        };
+    }
 }
