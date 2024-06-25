@@ -2,26 +2,36 @@
 
 enum TokenType
 {
-    OPERATOR,
+    PLUS, MINUS, STAR, SLASH, MOD,
+    PLUS_EQUALS, MINUS_EQUALS, STAR_EQUALS, SLASH_EQUALS, MOD_EQUALS,
+    NOT_EQUALS, EQUALS, ASSIGNMENT, NOT,
+
+    GREATER_THAN, LESS_THAN,
+    GREATER_THAN_EQUALS, LESS_THAN_EQUALS,
+
     STRING, NUMBER,
 
     IDENTIFIER, KEYWORD,
-    BOOLEAN, NULL
+    BOOLEAN, NULL,
+
+    METHOD,
 
     WHITESPACE, NEWLINE,
     BAD, EOF,
 }
 
 
-internal class Token
+internal sealed class Token
 {
-    public TokenType Type;
-    public object? Value;
+    public TokenType Type { get; }
+    public object? Value { get; }
+    public string Lexeme { get; }
 
-    public Token(TokenType type, object? value)
+    public Token(TokenType type, object? value, string lexeme)
     {
         Type = type;
         Value = value;
+        Lexeme = lexeme;
     }
 
     internal static readonly Dictionary<string, TokenType> Keywords = new()
@@ -36,20 +46,22 @@ internal class Token
         { "else if", TokenType.KEYWORD },
         { "else", TokenType.KEYWORD },
         { "null", TokenType.NULL },
+        { "let", TokenType.KEYWORD },
+        { "echo", TokenType.METHOD },
     };
 
     public override string ToString()
-        => $"\nType: {Type,-16} || Value: {Value,-16}";
+        => $"Type: {Type,-22} || Value: {Value,-22} || Lexeme: {Lexeme,-22}";
 }
 
-internal class Lexer
+internal sealed class Lexer
 {
-    public List<Token> Tokens = new();
+    public List<Token> Tokens { get; } = new();
 
     public readonly string Source;
 
-    public int Start;
-    public int Current = -1;
+    public int Start { get; private set; }
+    public int Current { get; private set; } = -1;
 
     public Lexer(string source)
     {
@@ -66,7 +78,7 @@ internal class Lexer
             NextToken();
         }
 
-        Tokens.Add(new Token(TokenType.EOF, null));
+        Tokens.Add(new Token(TokenType.EOF, null, ""));
 
         return Tokens;
     }
@@ -76,15 +88,31 @@ internal class Lexer
         switch (Source[Current])
         {
             case '+':
+                OnOperator(IsDoubleOp() ? TokenType.PLUS_EQUALS : TokenType.PLUS);
+                break;
             case '-':
+                OnOperator(IsDoubleOp() ? TokenType.MINUS_EQUALS : TokenType.MINUS);
+                break;
             case '*':
+                OnOperator(IsDoubleOp() ? TokenType.STAR_EQUALS : TokenType.STAR);
+                break;
             case '/':
+                OnOperator(IsDoubleOp() ? TokenType.SLASH_EQUALS : TokenType.SLASH);
+                break;
             case '%':
+                OnOperator(IsDoubleOp() ? TokenType.MOD_EQUALS : TokenType.MOD);
+                break;
             case '!':
+                OnOperator(IsDoubleOp() ? TokenType.NOT_EQUALS : TokenType.NOT);
+                break;
             case '=':
+                OnOperator(IsDoubleOp() ? TokenType.EQUALS : TokenType.ASSIGNMENT);
+                break;
             case '>':
+                OnOperator(IsDoubleOp() ? TokenType.GREATER_THAN_EQUALS : TokenType.GREATER_THAN);
+                break;
             case '<':
-                OnOperator();
+                OnOperator(IsDoubleOp() ? TokenType.LESS_THAN_EQUALS : TokenType.LESS_THAN);
                 break;
 
             case '\"':
@@ -122,36 +150,47 @@ internal class Lexer
     private char Peek()
         => IsEndOfFile() ? '\0' : Source[Current + 1];
 
+    private bool IsDoubleOp()
+    {
+        if (IsEndOfFile())
+            return false;
+
+        if (Source[Current + 1] != '=')
+            return false;
+
+        Advance();
+        return true;
+    }
+
     private string CurrentChars()
         => Source[Start..(Current + 1)];
 
-    private void OnOperator()
-    {
-        if (Peek() == '=')
-            Advance();
-
-        Tokens.Add(new Token(TokenType.OPERATOR, CurrentChars()));
-    }
+    private void OnOperator(TokenType type)
+        => Tokens.Add(new Token(type, null, CurrentChars()));
 
     private void OnBadToken()
-        => Tokens.Add(new Token(TokenType.BAD, CurrentChars()));
+        => Tokens.Add(new Token(TokenType.BAD, null, CurrentChars()));
 
     private void OnWhiteSpace()
-        => Tokens.Add(new Token(TokenType.WHITESPACE, CurrentChars()));
+        => Tokens.Add(new Token(TokenType.WHITESPACE, null, CurrentChars()));
 
     private void OnNewLine()
-        => Tokens.Add(new Token(TokenType.NEWLINE, "\\n"));
+        => Tokens.Add(new Token(TokenType.NEWLINE, "\\n", "\\n"));
 
-    private void OnStringLiteral() 
+    private void OnStringLiteral()
     {
-        while (Peek() != '\"' && !IsEndOfFile()) 
+        while (Peek() != '\"' && !IsEndOfFile())
             Advance();
 
         Advance();
-        Tokens.Add(new Token(TokenType.STRING, CurrentChars()));
+
+        string lexeme = CurrentChars();
+        string value = lexeme.Substring(1, lexeme.Length - 2);
+
+        Tokens.Add(new Token(TokenType.STRING, value, lexeme));
     }
 
-    private void OnNumber() 
+    private void OnNumber()
     {
         while (char.IsDigit(Peek()) && !IsEndOfFile())
             Advance();
@@ -162,19 +201,21 @@ internal class Lexer
         while (char.IsDigit(Peek()) && !IsEndOfFile())
             Advance();
 
-        Tokens.Add(new Token(TokenType.NUMBER, CurrentChars()));
+        string lexeme = CurrentChars();
+        double value = double.Parse(lexeme);
+        Tokens.Add(new Token(TokenType.NUMBER, value, lexeme));
     }
 
-    private void OnIdentifier() 
+    private void OnIdentifier()
     {
-        while (char.IsLetterOrDigit(Source[Current]) && !IsEndOfFile())
+        while (char.IsLetterOrDigit(Peek()) && !IsEndOfFile())
             Advance();
 
-        var token = CurrentChars().Trim();
-        if (Token.Keywords.TryGetValue(token, out TokenType tokenType))
-            Tokens.Add(new Token(tokenType, token));
-        
+        string lexeme = CurrentChars().Trim();
+
+        if (Token.Keywords.TryGetValue(lexeme, out TokenType tokenType))
+            Tokens.Add(new Token(tokenType, lexeme, lexeme));
         else
-            OnBadToken();
+            Tokens.Add(new Token(TokenType.IDENTIFIER, lexeme, lexeme));
     }
 }
