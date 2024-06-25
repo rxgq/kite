@@ -9,6 +9,8 @@ public enum TokenType
     GREATER_THAN, LESS_THAN,
     GREATER_THAN_EQUALS, LESS_THAN_EQUALS,
 
+    LEFT_PAREN, RIGHT_PAREN,
+
     STRING, NUMBER,
 
     IDENTIFIER, KEYWORD,
@@ -115,6 +117,14 @@ internal sealed class Lexer
                 OnOperator(IsDoubleOp() ? TokenType.LESS_THAN_EQUALS : TokenType.LESS_THAN);
                 break;
 
+            case '(':
+                OnLeftParen();
+                break;
+
+            case ')':
+                OnRightParen();
+                break;
+
             case '\"':
                 OnStringLiteral();
                 break;
@@ -167,6 +177,11 @@ internal sealed class Lexer
 
     private void OnOperator(TokenType type)
         => Tokens.Add(new Token(type, null, CurrentChars()));
+    private void OnRightParen()
+        => Tokens.Add(new Token(TokenType.RIGHT_PAREN, null, CurrentChars()));
+
+    private void OnLeftParen()
+        => Tokens.Add(new Token(TokenType.LEFT_PAREN, null, CurrentChars()));
 
     private void OnBadToken()
         => Tokens.Add(new Token(TokenType.BAD, null, CurrentChars()));

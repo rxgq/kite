@@ -47,13 +47,22 @@ public sealed class Parser
         {
             TokenType.NUMBER => new NumericExpr(double.Parse(token.Lexeme)),
             TokenType.IDENTIFIER => new IdentifierExpr(token.Lexeme),
+            TokenType.LEFT_PAREN => ParseGrouping(),
             _ => new UnknownExpr(),
         };
     }
 
+    private Expr ParseGrouping()
+    {
+        Expr expr = ParseExpression();
+        Consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
+
+        return new GroupingExpr(expr);
+    }
+
     private Token Advance()
     {
-        if (!IsEOFToken()) 
+        if (!IsEOFToken())
             Current++;
 
         return Previous();
@@ -73,14 +82,22 @@ public sealed class Parser
         return token.Type switch
         {
             TokenType.PLUS or TokenType.MINUS => 1,
-
             TokenType.STAR or TokenType.SLASH or TokenType.MOD => 2,
-
-            TokenType.GREATER_THAN or TokenType.LESS_THAN or 
-            TokenType.GREATER_THAN_EQUALS or TokenType.LESS_THAN_EQUALS or 
+            TokenType.GREATER_THAN or TokenType.LESS_THAN or
+            TokenType.GREATER_THAN_EQUALS or TokenType.LESS_THAN_EQUALS or
             TokenType.EQUALS or TokenType.NOT_EQUALS => 3,
-
             _ => 0,
         };
+    }
+
+    private void Consume(TokenType type, string message)
+    {
+        if (CurrentToken().Type == type)
+        {
+            Advance();
+            return;
+        }
+
+        //throw new ParseException(message);
     }
 }

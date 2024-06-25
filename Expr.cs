@@ -2,16 +2,8 @@
 
 public enum ExprType
 {
-    Binary,
-    Unary,
-    Identifier,
-    Assignment,
-    Numeric,
-    StringLiteral,
-    BooleanLiteral,
-    IfStatement,
-    EndOfInput,
-    Unknown,
+    Binary, Unary, Identifier, Assignment,
+    Numeric, StringLiteral, BooleanLiteral, IfStatement, EndOfInput, Grouping, Unknown
 }
 
 public abstract class Expr
@@ -68,4 +60,19 @@ public class UnknownExpr : Expr
     {
         Type = ExprType.Unknown;
     }
+
+    public override string ToString() => "Unknown Expression";
+}
+
+public class GroupingExpr : Expr
+{
+    public Expr Expression { get; }
+
+    public GroupingExpr(Expr expression)
+    {
+        Type = ExprType.Grouping;
+        Expression = expression;
+    }
+
+    public override string ToString() => $"({Expression})";
 }
