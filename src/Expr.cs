@@ -1,9 +1,12 @@
-﻿namespace judas_script;
+﻿namespace judas_script.src;
 
 public enum ExprType
 {
     Binary, Unary, Identifier, Assignment,
-    Numeric, StringLiteral, BooleanLiteral, IfStatement, EndOfInput, Grouping, Unknown
+
+    Numeric, StringLiteral, BooleanLiteral, 
+    
+    IfStatement, EndOfInput, Grouping, Unknown
 }
 
 public abstract class Expr
@@ -25,7 +28,33 @@ public class BinaryExpr : Expr
         Operator = op;
     }
 
-    public override string ToString() => $"({Left} {Operator} {Right})";
+    public override string ToString() => $"({Left} {Operator} {Right})\n";
+}
+
+public class StringLiteralExpr : Expr
+{
+    public object Value { get; set; }
+
+    public StringLiteralExpr(object value)
+    {
+        Type = ExprType.StringLiteral;
+        Value = value;
+    }
+
+    public override string ToString() => Value.ToString();
+}
+
+public class BooleanLiteralExpr : Expr
+{
+    public object Value { get; set; }
+
+    public BooleanLiteralExpr(object value)
+    {
+        Type = ExprType.BooleanLiteral;
+        Value = value;
+    }
+
+    public override string ToString() => Value.ToString();
 }
 
 public class NumericExpr : Expr
@@ -62,17 +91,4 @@ public class UnknownExpr : Expr
     }
 
     public override string ToString() => "Unknown Expression";
-}
-
-public class GroupingExpr : Expr
-{
-    public Expr Expression { get; }
-
-    public GroupingExpr(Expr expression)
-    {
-        Type = ExprType.Grouping;
-        Expression = expression;
-    }
-
-    public override string ToString() => $"({Expression})";
 }

@@ -1,4 +1,4 @@
-﻿namespace judas_script;
+﻿namespace judas_script.src;
 
 public enum TokenType
 {
@@ -9,7 +9,8 @@ public enum TokenType
     GREATER_THAN, LESS_THAN,
     GREATER_THAN_EQUALS, LESS_THAN_EQUALS,
 
-    LEFT_PAREN, RIGHT_PAREN,
+    LEFT_PAREN, RIGHT_PAREN, TERMINATOR,
+    LEFT_BRACE, RIGHT_BRACE,
 
     STRING, NUMBER,
 
@@ -21,7 +22,6 @@ public enum TokenType
     WHITESPACE, NEWLINE,
     BAD, EOF,
 }
-
 
 public sealed class Token
 {
@@ -45,7 +45,7 @@ public sealed class Token
         { "false", TokenType.BOOLEAN },
         { "is", TokenType.KEYWORD },
         { "if", TokenType.KEYWORD },
-        { "else if", TokenType.KEYWORD },
+        { "elif", TokenType.KEYWORD },
         { "else", TokenType.KEYWORD },
         { "null", TokenType.NULL },
         { "let", TokenType.KEYWORD },
@@ -125,6 +125,18 @@ internal sealed class Lexer
                 OnRightParen();
                 break;
 
+            case '{':
+                OnLeftBrace();
+                break;
+
+            case '}':
+                OnLeftBrace();
+                break;
+
+            case ';':
+                OnTerminator();
+                break;
+
             case '\"':
                 OnStringLiteral();
                 break;
@@ -177,11 +189,21 @@ internal sealed class Lexer
 
     private void OnOperator(TokenType type)
         => Tokens.Add(new Token(type, null, CurrentChars()));
+
     private void OnRightParen()
         => Tokens.Add(new Token(TokenType.RIGHT_PAREN, null, CurrentChars()));
 
     private void OnLeftParen()
         => Tokens.Add(new Token(TokenType.LEFT_PAREN, null, CurrentChars()));
+
+    private void OnLeftBrace()
+        => Tokens.Add(new Token(TokenType.LEFT_BRACE, null, CurrentChars()));
+
+    private void OnRightBrace()
+        => Tokens.Add(new Token(TokenType.RIGHT_BRACE, null, CurrentChars()));
+
+    private void OnTerminator()
+        => Tokens.Add(new Token(TokenType.TERMINATOR, null, CurrentChars()));
 
     private void OnBadToken()
         => Tokens.Add(new Token(TokenType.BAD, null, CurrentChars()));

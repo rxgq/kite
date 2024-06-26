@@ -1,8 +1,10 @@
-﻿namespace judas_script;
+﻿using judas_script.src;
+
+namespace judas_script;
 
 internal class Program
 {
-    static void Main(string[] args)
+    static void Main()
     {
         var code = File.ReadAllText("C:\\Users\\adunderdale\\test.txt");
 
@@ -13,6 +15,11 @@ internal class Program
             Console.WriteLine(token.ToString());
 
         var parser = new Parser(tokens);
-        parser.Parse();
+        List<Expr> expressions = parser.Parse();
+
+        var interpreter = new Interpreter(expressions);
+        var result = interpreter.Interpret();
+
+        Console.Write(result);
     }
 }
