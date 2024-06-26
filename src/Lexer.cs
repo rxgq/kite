@@ -3,8 +3,9 @@
 public enum TokenType
 {
     PLUS, MINUS, STAR, SLASH, MOD,
-    PLUS_EQUALS, MINUS_EQUALS, STAR_EQUALS, SLASH_EQUALS, MOD_EQUALS,
+    PLUS_EQUALS, MINUS_EQUALS, STAR_EQUALS, SLASH_EQUALS,
     NOT_EQUALS, EQUALS, ASSIGNMENT, NOT,
+    INCREMENT, DECREMENT, EXPONENT,
 
     GREATER_THAN, LESS_THAN,
     GREATER_THAN_EQUALS, LESS_THAN_EQUALS,
@@ -90,19 +91,19 @@ internal sealed class Lexer
         switch (Source[Current])
         {
             case '+':
-                OnOperator(IsDoubleOp() ? TokenType.PLUS_EQUALS : TokenType.PLUS);
+                OnOperator(IsDoubleOp() ? TokenType.PLUS_EQUALS : MatchNext('+') ? TokenType.INCREMENT : TokenType.PLUS);
                 break;
             case '-':
-                OnOperator(IsDoubleOp() ? TokenType.MINUS_EQUALS : TokenType.MINUS);
+                OnOperator(IsDoubleOp() ? TokenType.MINUS_EQUALS : MatchNext('-') ? TokenType.DECREMENT : TokenType.MINUS);
                 break;
             case '*':
-                OnOperator(IsDoubleOp() ? TokenType.STAR_EQUALS : TokenType.STAR);
+                OnOperator(IsDoubleOp() ? TokenType.STAR_EQUALS : MatchNext('*') ? TokenType.EXPONENT : TokenType.STAR);
                 break;
             case '/':
                 OnOperator(IsDoubleOp() ? TokenType.SLASH_EQUALS : TokenType.SLASH);
                 break;
             case '%':
-                OnOperator(IsDoubleOp() ? TokenType.MOD_EQUALS : TokenType.MOD);
+                OnOperator(TokenType.MOD);
                 break;
             case '!':
                 OnOperator(IsDoubleOp() ? TokenType.NOT_EQUALS : TokenType.NOT);
@@ -208,8 +209,8 @@ internal sealed class Lexer
     private void OnBadToken()
         => Tokens.Add(new Token(TokenType.BAD, null, CurrentChars()));
 
-    private void OnWhiteSpace()
-        => Tokens.Add(new Token(TokenType.WHITESPACE, null, CurrentChars()));
+    private void OnWhiteSpace() { return; }
+        //=> Tokens.Add(new Token(TokenType.WHITESPACE, null, CurrentChars()));
 
     private void OnNewLine()
         => Tokens.Add(new Token(TokenType.NEWLINE, "\\n", "\\n"));
@@ -254,5 +255,13 @@ internal sealed class Lexer
             Tokens.Add(new Token(tokenType, lexeme, lexeme));
         else
             Tokens.Add(new Token(TokenType.IDENTIFIER, lexeme, lexeme));
+    }
+    private bool MatchNext(char c)
+    {
+        if (IsEndOfFile() || Source[Current + 1] != c)
+            return false;
+
+        Advance();
+        return true;
     }
 }

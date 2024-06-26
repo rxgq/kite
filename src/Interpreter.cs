@@ -24,6 +24,7 @@ internal class Interpreter
         return expr.Type switch
         {
             ExprType.Binary => BinaryExpr((BinaryExpr)expr),
+            ExprType.Unary => UnaryExpr((UnaryExpr)expr),
             ExprType.StringLiteral => ((StringLiteralExpr)expr).Value,
             ExprType.Numeric => ((NumericExpr)expr).Value,
             ExprType.BooleanLiteral => ((BooleanLiteralExpr)expr).Value,
@@ -52,8 +53,8 @@ internal class Interpreter
                 throw new Exception("Invalid operands for -");
 
             case "*":
-                if (left is double ml && right is double mp)
-                    return ml * mp;
+                if (left is double tl && right is double tp)
+                    return tl * tp;
 
                 throw new Exception("Invalid operands for *");
 
@@ -62,6 +63,12 @@ internal class Interpreter
                     return dl / dr;
 
                 throw new Exception("Invalid operands for /");
+
+            case "%":
+                if (left is double ml && right is double mr)
+                    return ml % mr;
+
+                throw new Exception("Invalid operands for %");
 
             case "==":
             case "!=":
@@ -79,6 +86,35 @@ internal class Interpreter
 
             default:
                 throw new Exception("Binary Expression parsing exception");
+        }
+    }
+
+    public object UnaryExpr(UnaryExpr expr)
+    {
+        var value = Evaluate(expr.Value);
+
+        switch (expr.Operator)
+        {
+            case "++":
+                if (value is double il)
+                    return il + 1;
+
+                throw new Exception("Invalid operand type for ++");
+
+            case "--":
+                if (value is double dl)
+                    return dl - 1;
+
+                throw new Exception("Invalid operand type for --");
+
+            case "**":
+                if (value is double el)
+                    return Math.Pow(el, 2);
+
+                throw new Exception("Invalid operand type for **");
+
+            default:
+                throw new Exception("Unsupported unary operator: " + expr.Operator);
         }
     }
 }

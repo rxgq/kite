@@ -1,10 +1,12 @@
-﻿namespace judas_script.src;
+﻿using System.Linq.Expressions;
+
+namespace judas_script.src;
 
 public enum ExprType
 {
     Binary, Unary, Identifier, Assignment,
 
-    Numeric, StringLiteral, BooleanLiteral, 
+    Numeric, StringLiteral, BooleanLiteral, WhiteSpace,
     
     IfStatement, EndOfInput, Grouping, Unknown
 }
@@ -12,6 +14,15 @@ public enum ExprType
 public abstract class Expr
 {
     public ExprType Type { get; set; }
+
+    public void ToString(Expr expr)
+    {
+        if (expr is BinaryExpr bl)
+            Console.Write(bl.ToString());
+
+        else if (expr is UnaryExpr ub)
+            Console.Write(ub.ToString());
+    }
 }
 
 public class BinaryExpr : Expr
@@ -31,6 +42,22 @@ public class BinaryExpr : Expr
     public override string ToString() => $"({Left} {Operator} {Right})\n";
 }
 
+public class UnaryExpr : Expr 
+{
+    public Expr Value { get; set; }
+
+    public string Operator { get; set; }
+
+    public UnaryExpr(Expr value, string op) 
+    {
+        Type = ExprType.Unary;
+        Value = value;
+        Operator = op;
+    }
+    public override string ToString() => $"({Value}{Operator})\n";
+}
+
+
 public class StringLiteralExpr : Expr
 {
     public object Value { get; set; }
@@ -42,6 +69,14 @@ public class StringLiteralExpr : Expr
     }
 
     public override string ToString() => Value.ToString();
+}
+
+public class WhiteSpaceExpr : Expr 
+{
+    public WhiteSpaceExpr() 
+    {
+        Type = ExprType.WhiteSpace;
+    }
 }
 
 public class BooleanLiteralExpr : Expr

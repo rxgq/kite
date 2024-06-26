@@ -17,10 +17,13 @@ public sealed class Parser
         while (!IsEOFToken())
         {
             Expr expression = ParseExpression();
+
+            if (expression.Type == ExprType.WhiteSpace)
+                continue;
+
             Expressions.Add(expression);
 
-            if (expression is BinaryExpr bl) 
-                Console.Write(bl.ToString());
+            Console.Write(expression.ToString());
         }
 
         return Expressions;
@@ -29,6 +32,19 @@ public sealed class Parser
     private Expr ParseExpression()
     {
         return ParseBinary();
+    }
+
+    private Expr ParseUnary() 
+    {
+        Expr left = ParsePrimary();
+
+        while (!IsEOFToken())
+        {
+            Token operatorToken = Advance();
+            left = new UnaryExpr(left, operatorToken.Lexeme);
+        }
+
+        return left;
     }
 
     private Expr ParseBinary(int precedence = 0)
@@ -55,7 +71,7 @@ public sealed class Parser
             TokenType.NUMBER => new NumericExpr(double.Parse(token.Lexeme)),
             TokenType.BOOLEAN => new BooleanLiteralExpr(bool.Parse(token.Lexeme)),
             TokenType.IDENTIFIER => new IdentifierExpr(token.Lexeme),
-
+            TokenType.WHITESPACE => new WhiteSpaceExpr(),
             _ => new UnknownExpr(),
         };
     }
@@ -83,10 +99,10 @@ public sealed class Parser
         {
             TokenType.PLUS or TokenType.MINUS => 1,
             TokenType.STAR or TokenType.SLASH or TokenType.MOD => 2,
-
             TokenType.GREATER_THAN or TokenType.LESS_THAN or
             TokenType.GREATER_THAN_EQUALS or TokenType.LESS_THAN_EQUALS or
             TokenType.EQUALS or TokenType.NOT_EQUALS => 3,
+            TokenType.INCREMENT or TokenType.DECREMENT or TokenType.NOT => 4,
             _ => 0,
         };
     }
