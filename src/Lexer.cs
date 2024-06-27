@@ -4,21 +4,22 @@ public enum TokenType
 {
     PLUS, MINUS, STAR, SLASH, MOD,
     PLUS_EQUALS, MINUS_EQUALS, STAR_EQUALS, SLASH_EQUALS,
-    NOT_EQUALS, EQUALS, ASSIGNMENT, NOT,
-    INCREMENT, DECREMENT, EXPONENT,
+    NOT_EQUALS, EQUALS,
 
     GREATER_THAN, LESS_THAN,
     GREATER_THAN_EQUALS, LESS_THAN_EQUALS,
 
-    LEFT_PAREN, RIGHT_PAREN, TERMINATOR,
+    INCREMENT, DECREMENT, EXPONENT, NOT,
+
+    LEFT_PAREN, RIGHT_PAREN, 
     LEFT_BRACE, RIGHT_BRACE,
 
-    STRING, NUMBER,
+    ASSIGNMENT,
 
-    IDENTIFIER, KEYWORD,
-    BOOLEAN, NULL,
+    STRING, NUMBER, BOOLEAN, IDENTIFIER, KEYWORD, NULL,
 
     METHOD,
+    TERMINATOR,
 
     WHITESPACE, NEWLINE,
     BAD, EOF,
@@ -38,9 +39,13 @@ public sealed class Token
     }
 
     internal static readonly Dictionary<string, TokenType> Keywords = new()
-    {
+    { 
         { "and", TokenType.KEYWORD },
         { "or", TokenType.KEYWORD },
+        { "xor", TokenType.KEYWORD },
+        { "nand", TokenType.KEYWORD },
+        { "xnor", TokenType.KEYWORD },
+        { "nor", TokenType.KEYWORD },
         { "not", TokenType.KEYWORD },
         { "true", TokenType.BOOLEAN },
         { "false", TokenType.BOOLEAN },
@@ -50,6 +55,7 @@ public sealed class Token
         { "else", TokenType.KEYWORD },
         { "null", TokenType.NULL },
         { "let", TokenType.KEYWORD },
+        { "var", TokenType.KEYWORD },
         { "echo", TokenType.METHOD },
     };
 
@@ -131,7 +137,7 @@ internal sealed class Lexer
                 break;
 
             case '}':
-                OnLeftBrace();
+                OnRightBrace();
                 break;
 
             case ';':

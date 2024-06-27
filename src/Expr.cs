@@ -4,11 +4,11 @@ namespace judas_script.src;
 
 public enum ExprType
 {
-    Binary, Unary, Identifier, Assignment,
+    Binary, Unary, Identifier, VariableDeclaration,
 
     Numeric, StringLiteral, BooleanLiteral, WhiteSpace,
     
-    IfStatement, EndOfInput, Grouping, Unknown
+    IfStatement, EndOfInput, Grouping, Unknown, MethodCall,
 }
 
 public abstract class Expr
@@ -39,7 +39,7 @@ public class BinaryExpr : Expr
         Operator = op;
     }
 
-    public override string ToString() => $"({Left} {Operator} {Right})\n";
+    public override string ToString() => $"({Left} {Operator} {Right})";
 }
 
 public class UnaryExpr : Expr 
@@ -117,6 +117,37 @@ public class IdentifierExpr : Expr
 
     public override string ToString() => Name;
 }
+
+public class VariableDeclarationExpr : Expr 
+{
+    public string Declaration { get; set; }
+
+    public string Identifier { get; set; }
+
+    public object Value { get; set; }
+
+    public VariableDeclarationExpr(string declaration, string identifer, object value) 
+    {
+        Type = ExprType.VariableDeclaration;
+        Declaration = declaration;
+        Identifier = identifer;
+        Value = value;
+    }
+}
+
+public class MethodCallExpr : Expr 
+{
+    public string Identifier { get; set; }
+    public List<object> Parameters { get; set; }
+
+    public MethodCallExpr(string identifer, List<object> parameters)
+    {
+        Type = ExprType.MethodCall;
+        Identifier = identifer;
+        Parameters = parameters;
+    }
+}
+
 
 public class UnknownExpr : Expr
 {

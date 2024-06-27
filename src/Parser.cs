@@ -22,8 +22,6 @@ public sealed class Parser
                 continue;
 
             Expressions.Add(expression);
-
-            Console.Write(expression.ToString());
         }
 
         return Expressions;
@@ -31,7 +29,46 @@ public sealed class Parser
 
     private Expr ParseExpression()
     {
-        return ParseBinary();
+        return ParseMethodCall();
+    }
+
+    private Expr ParseMethodCall() 
+    {
+        Expr expr = ParsePrimary();
+
+        if (expr is MethodCallExpr method) 
+        {
+            var param = Advance();
+            return new MethodCallExpr(method.Identifier, new List<object> { param });
+        }
+
+
+        return new UnknownExpr();
+    }
+
+    private Expr ParseAssignment() 
+    {
+        Expr expr = ParsePrimary();
+
+        if (expr is VariableDeclarationExpr keyword) 
+        {
+            var identifier = Advance();
+
+            // skip equals symbol
+            Advance();
+
+            var value = Advance();
+
+            var variable = new VariableDeclarationExpr(keyword.Declaration, identifier.Lexeme, value.Value);
+
+            // consume terminator
+            Advance();
+            Interpreter.Variables.Add(variable.Identifier, variable.Value);
+
+            return variable;
+        }
+
+        return new UnknownExpr();
     }
 
     private Expr ParseUnary() 
@@ -72,6 +109,10 @@ public sealed class Parser
             TokenType.BOOLEAN => new BooleanLiteralExpr(bool.Parse(token.Lexeme)),
             TokenType.IDENTIFIER => new IdentifierExpr(token.Lexeme),
             TokenType.WHITESPACE => new WhiteSpaceExpr(),
+
+            TokenType.METHOD => new MethodCallExpr(token.Lexeme, null),
+            TokenType.KEYWORD => new VariableDeclarationExpr(token.Lexeme, null, null),
+
             _ => new UnknownExpr(),
         };
     }

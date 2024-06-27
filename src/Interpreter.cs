@@ -3,6 +3,7 @@
 internal class Interpreter
 {
     List<Expr> Expressions { get; set; }
+    public static Dictionary<string, object> Variables = new();
 
     public Interpreter(List<Expr> expressions)
     {
@@ -28,9 +29,22 @@ internal class Interpreter
             ExprType.StringLiteral => ((StringLiteralExpr)expr).Value,
             ExprType.Numeric => ((NumericExpr)expr).Value,
             ExprType.BooleanLiteral => ((BooleanLiteralExpr)expr).Value,
+            ExprType.MethodCall => MethodExpr((MethodCallExpr)expr),
 
             _ => ExprType.Unknown
         };
+    }
+
+    public static object MethodExpr(MethodCallExpr expr) 
+    {
+        switch (expr.Identifier) 
+        {
+            case "echo": OnEcho(expr);
+                return null;
+
+            default:
+                throw new Exception("Invalid method");
+        }
     }
 
     public object BinaryExpr(BinaryExpr expr)
@@ -83,6 +97,52 @@ internal class Interpreter
 
                 return left == right;
 
+            case ">":
+            case "<":
+                if (left is double gl && right is double gr)
+                    return expr.Operator == ">" ? gl > gr : gl < gr;
+
+                throw new Exception("Invalid operands for >");
+
+            case ">=":
+            case "<=":
+                if (left is double el && right is double er)
+                    return expr.Operator == ">=" ? (el > er || el == er) : (el < er || el == er);
+
+                throw new Exception("Invalid operands for >");
+
+            case "and":
+                if (left is bool al && right is bool ar)
+                    return al && ar;
+                throw new Exception("Invalid operands for and");
+
+            case "or":
+                if (left is bool ol && right is bool or)
+                    return ol || or;
+                throw new Exception("Invalid operands for or");
+
+            case "xor":
+                if (left is bool xorl && right is bool xorr)
+                    return xorl ^ xorr;
+                throw new Exception("Invalid operands for xor");
+
+            case "nand":
+                if (left is bool nal && right is bool nar)
+                    return !(nal && nar);
+                throw new Exception("Invalid operands for nand");
+
+            case "nor":
+                if (left is bool norl && right is bool norr)
+                    return !(norl || norr);
+                throw new Exception("Invalid operands for nor");
+
+            case "xnor":
+                if (left is bool xnorl && right is bool xnorr)
+                    return !(xnorl ^ xnorr);
+                throw new Exception("Invalid operands for xnor");
+
+
+                throw new Exception("Invalid operands for and");
 
             default:
                 throw new Exception("Binary Expression parsing exception");
@@ -116,5 +176,17 @@ internal class Interpreter
             default:
                 throw new Exception("Unsupported unary operator: " + expr.Operator);
         }
+    }
+
+    public static void OnEcho(MethodCallExpr expr) 
+    {
+        if (expr.Parameters[0] is Token t) 
+        {
+            var text = t.Value;
+            Console.WriteLine(text);
+            return;
+        }
+
+        throw new Exception("Invalid parameter for echo");
     }
 }
