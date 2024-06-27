@@ -138,9 +138,9 @@ public class VariableDeclarationExpr : Expr
 public class MethodCallExpr : Expr 
 {
     public string Identifier { get; set; }
-    public List<object> Parameters { get; set; }
+    public List<Token> Parameters { get; set; }
 
-    public MethodCallExpr(string identifer, List<object> parameters)
+    public MethodCallExpr(string identifer, List<Token> parameters)
     {
         Type = ExprType.MethodCall;
         Identifier = identifer;

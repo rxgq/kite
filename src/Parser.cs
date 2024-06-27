@@ -36,10 +36,23 @@ public sealed class Parser
     {
         Expr expr = ParsePrimary();
 
-        if (expr is MethodCallExpr method) 
+        if (expr is MethodCallExpr method)
         {
-            var param = Advance();
-            return new MethodCallExpr(method.Identifier, new List<object> { param });
+            // initial parameter
+            var parameters = new List<Token> { Advance() };
+
+            while (true) 
+            {
+                if (Advance().Type == TokenType.SEPARATOR) 
+                {
+                    parameters.Add(Advance());
+                    continue;
+                }
+
+                break;
+            }
+
+            return new MethodCallExpr(method.Identifier, parameters);
         }
 
 

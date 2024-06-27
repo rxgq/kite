@@ -12,12 +12,12 @@ internal class Interpreter
 
     public object Interpret()
     {
-        object lastResult = null;
+        object? result = null;
 
         foreach (var expr in Expressions)
-            lastResult = Evaluate(expr);
+            result = Evaluate(expr);
 
-        return lastResult;
+        return result;
     }
 
     public object Evaluate(Expr expr)
@@ -39,7 +39,14 @@ internal class Interpreter
     {
         switch (expr.Identifier) 
         {
-            case "echo": OnEcho(expr);
+            case "echo":
+                if (expr.Parameters.Count == 1)
+                    OnEcho(expr);
+                else if (expr.Parameters.Count == 2)
+                    OnEchoCount(expr);
+                else 
+                    throw new Exception($"No overload for echo with {expr.Parameters.Count} args");
+
                 return null;
 
             default:
@@ -188,5 +195,16 @@ internal class Interpreter
         }
 
         throw new Exception("Invalid parameter for echo");
+    }
+
+    public static void OnEchoCount(MethodCallExpr expr) 
+    {
+        var value = expr.Parameters[1].Value;
+
+        if (value is double count)
+            for (int i = 0; i < count; i++) 
+                OnEcho(expr);
+
+        return;
     }
 }

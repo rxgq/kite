@@ -12,8 +12,8 @@ internal class Program
         var lexer = new Lexer(code);
         var tokens = lexer.Tokenize();
 
-/*        foreach (var token in tokens)
-            Console.WriteLine(token.ToString());*/
+        foreach (var token in tokens)
+            Console.WriteLine(token.ToString());
 
         var parser = new Parser(tokens);
         List<Expr> expressions = parser.Parse();

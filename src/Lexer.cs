@@ -19,7 +19,7 @@ public enum TokenType
     STRING, NUMBER, BOOLEAN, IDENTIFIER, KEYWORD, NULL,
 
     METHOD,
-    TERMINATOR,
+    TERMINATOR, SEPARATOR,
 
     WHITESPACE, NEWLINE,
     BAD, EOF,
@@ -144,6 +144,10 @@ internal sealed class Lexer
                 OnTerminator();
                 break;
 
+            case ',':
+                OnSeparator();
+                break;
+
             case '\"':
                 OnStringLiteral();
                 break;
@@ -211,6 +215,9 @@ internal sealed class Lexer
 
     private void OnTerminator()
         => Tokens.Add(new Token(TokenType.TERMINATOR, null, CurrentChars()));
+
+    private void OnSeparator()
+        => Tokens.Add(new Token(TokenType.SEPARATOR, null, CurrentChars()));
 
     private void OnBadToken()
         => Tokens.Add(new Token(TokenType.BAD, null, CurrentChars()));
