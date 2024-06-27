@@ -1,6 +1,19 @@
-﻿namespace judas_script.src;
+﻿namespace Judas;
 
-internal abstract class JudasException
+internal abstract class JudasException : Exception
 {
-    //public int MyProperty { get; set; }
+    public string Message { get; set; }
+}
+
+internal class NoValidOverloadException : JudasException 
+{
+    public string Method { get; set; }
+    public int ArgsCount { get; set; }
+
+    public NoValidOverloadException(string method, int argsCount) 
+    {
+        Method = method;
+        ArgsCount = argsCount;
+        Message = $"No valid overload for '{method}' that takes {argsCount} parameters.";
+    }
 }

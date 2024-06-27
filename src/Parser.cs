@@ -1,4 +1,4 @@
-﻿namespace judas_script.src;
+﻿namespace Judas;
 
 public sealed class Parser
 {
@@ -17,11 +17,11 @@ public sealed class Parser
         while (!IsEOFToken())
         {
             Expr expression = ParseExpression();
-
-            if (expression.Type == ExprType.WhiteSpace)
-                continue;
-
             Expressions.Add(expression);
+
+            Expr expression2 = ParseMethodCall();
+            Expressions.Add(expression2);
+            break;
         }
 
         return Expressions;
@@ -29,7 +29,7 @@ public sealed class Parser
 
     private Expr ParseExpression()
     {
-        return ParseMethodCall();
+        return ParseVariableDeclaration();
     }
 
     private Expr ParseMethodCall() 
@@ -59,7 +59,7 @@ public sealed class Parser
         return new UnknownExpr();
     }
 
-    private Expr ParseAssignment() 
+    private Expr ParseVariableDeclaration() 
     {
         Expr expr = ParsePrimary();
 

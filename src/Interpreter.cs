@@ -1,4 +1,4 @@
-﻿namespace judas_script.src;
+﻿namespace Judas;
 
 internal class Interpreter
 {
@@ -45,7 +45,7 @@ internal class Interpreter
                 else if (expr.Parameters.Count == 2)
                     OnEchoCount(expr);
                 else 
-                    throw new Exception($"No overload for echo with {expr.Parameters.Count} args");
+                    throw new NoValidOverloadException("echo", expr.Parameters.Count);
 
                 return null;
 
@@ -187,6 +187,13 @@ internal class Interpreter
 
     public static void OnEcho(MethodCallExpr expr) 
     {
+        if (expr.Parameters[0].Type == TokenType.IDENTIFIER) 
+        {
+            var text = Variables[expr.Parameters[0].Lexeme];
+            Console.WriteLine(text);
+            return;
+        }
+
         if (expr.Parameters[0] is Token t) 
         {
             var text = t.Value;

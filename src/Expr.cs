@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-
-namespace judas_script.src;
+﻿namespace Judas;
 
 public enum ExprType
 {

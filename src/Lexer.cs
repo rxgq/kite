@@ -1,4 +1,4 @@
-﻿namespace judas_script.src;
+﻿namespace Judas;
 
 public enum TokenType
 {
@@ -265,9 +265,9 @@ internal sealed class Lexer
         string lexeme = CurrentChars().Trim();
 
         if (Token.Keywords.TryGetValue(lexeme, out TokenType tokenType))
-            Tokens.Add(new Token(tokenType, lexeme, lexeme));
+            Tokens.Add(new Token(tokenType, null, lexeme));
         else
-            Tokens.Add(new Token(TokenType.IDENTIFIER, lexeme, lexeme));
+            Tokens.Add(new Token(TokenType.IDENTIFIER, null, lexeme));
     }
     private bool MatchNext(char c)
     {

@@ -1,7 +1,5 @@
-﻿using judas_script.src;
-using System.Linq.Expressions;
+﻿namespace Judas;
 
-namespace judas_script;
 
 internal class Program
 {
