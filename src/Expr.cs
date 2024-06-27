@@ -144,6 +144,8 @@ public class MethodCallExpr : Expr
         Identifier = identifer;
         Parameters = parameters;
     }
+
+    public override string ToString() => $"Method: {Identifier} || Params: {Parameters.Count}\n";
 }
 
 

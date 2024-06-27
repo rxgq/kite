@@ -56,7 +56,9 @@ public sealed class Token
         { "null", TokenType.NULL },
         { "let", TokenType.KEYWORD },
         { "var", TokenType.KEYWORD },
+
         { "echo", TokenType.METHOD },
+        { "exit", TokenType.METHOD },
     };
 
     public override string ToString()

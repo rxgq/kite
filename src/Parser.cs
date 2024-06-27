@@ -1,4 +1,6 @@
-﻿namespace Judas;
+﻿using judas_script.src.Libraries;
+
+namespace Judas;
 
 public sealed class Parser
 {
@@ -18,10 +20,6 @@ public sealed class Parser
         {
             Expr expression = ParseExpression();
             Expressions.Add(expression);
-
-            Expr expression2 = ParseMethodCall();
-            Expressions.Add(expression2);
-            break;
         }
 
         return Expressions;
@@ -29,7 +27,7 @@ public sealed class Parser
 
     private Expr ParseExpression()
     {
-        return ParseVariableDeclaration();
+        return ParseMethodCall();
     }
 
     private Expr ParseMethodCall() 
@@ -41,9 +39,15 @@ public sealed class Parser
             // initial parameter
             var parameters = new List<Token> { Advance() };
 
+            if (parameters[0].Type == TokenType.METHOD)
+                return new MethodCallExpr(method.Identifier, new List<Token>());
+
+            if (parameters[0].Type == TokenType.TERMINATOR)
+                return new MethodCallExpr(method.Identifier, new List<Token>());
+
             while (true) 
             {
-                if (Advance().Type == TokenType.SEPARATOR) 
+                if (Advance().Type == TokenType.SEPARATOR)
                 {
                     parameters.Add(Advance());
                     continue;
@@ -51,6 +55,9 @@ public sealed class Parser
 
                 break;
             }
+
+            if (Advance().Type != TokenType.TERMINATOR)
+                throw new JudasException.ExpectedSyntaxException(";");
 
             return new MethodCallExpr(method.Identifier, parameters);
         }

@@ -16,8 +16,8 @@ internal class Program
         var parser = new Parser(tokens);
         List<Expr> expressions = parser.Parse();
 
-/*        foreach (var expression in expressions)
-            Console.Write(expression.ToString());*/
+        foreach (var expression in expressions)
+            Console.Write(expression.ToString());
 
         var interpreter = new Interpreter(expressions);
         var result = interpreter.Interpret();

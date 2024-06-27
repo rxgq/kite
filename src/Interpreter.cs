@@ -1,4 +1,6 @@
-﻿namespace Judas;
+﻿using judas_script.src.Libraries;
+
+namespace Judas;
 
 internal class Interpreter
 {
@@ -41,14 +43,21 @@ internal class Interpreter
         {
             case "echo":
                 if (expr.Parameters.Count == 1)
-                    OnEcho(expr);
+                    Standard.OnEcho(expr);
                 else if (expr.Parameters.Count == 2)
-                    OnEchoCount(expr);
+                    Standard.OnEchoCount(expr);
                 else 
-                    throw new NoValidOverloadException("echo", expr.Parameters.Count);
+                    throw new JudasException.NoValidOverloadException("echo", expr.Parameters.Count);
 
                 return null;
 
+            case "exit":
+                if (expr.Parameters.Count != 0)
+                    throw new JudasException.NoValidOverloadException("exit", expr.Parameters.Count);
+
+                Standard.OnExit(expr);
+                return null;
+            
             default:
                 throw new Exception("Invalid method");
         }
@@ -183,35 +192,5 @@ internal class Interpreter
             default:
                 throw new Exception("Unsupported unary operator: " + expr.Operator);
         }
-    }
-
-    public static void OnEcho(MethodCallExpr expr) 
-    {
-        if (expr.Parameters[0].Type == TokenType.IDENTIFIER) 
-        {
-            var text = Variables[expr.Parameters[0].Lexeme];
-            Console.WriteLine(text);
-            return;
-        }
-
-        if (expr.Parameters[0] is Token t) 
-        {
-            var text = t.Value;
-            Console.WriteLine(text);
-            return;
-        }
-
-        throw new Exception("Invalid parameter for echo");
-    }
-
-    public static void OnEchoCount(MethodCallExpr expr) 
-    {
-        var value = expr.Parameters[1].Value;
-
-        if (value is double count)
-            for (int i = 0; i < count; i++) 
-                OnEcho(expr);
-
-        return;
     }
 }
