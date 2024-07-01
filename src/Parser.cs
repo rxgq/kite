@@ -99,10 +99,17 @@ public sealed class Parser
         // consume ;
         Advance();
 
-        if (assignee is IdentifierExpr identAssignee && assigner is IdentifierExpr identAssigner) 
+        if (assignee is IdentifierExpr identAssignee) 
         {
-            return new AssignmentExpr(x, identAssigner.Name, identAssignee.Name);
+            if (assigner is IdentifierExpr identAssigner)
+                return new AssignmentExpr(x, identAssigner, identAssignee.Name);
+
+            else if (assigner is NumericExpr numericAssigner)
+                return new AssignmentExpr(x, numericAssigner, identAssignee.Name);
+
         }
+
+
 
         return new UnknownExpr();
     }
@@ -115,15 +122,16 @@ public sealed class Parser
         {
             var identifier = Advance();
 
-            // skip equals symbol
-            Advance();
+            var equals = Advance();
+            if (equals.Type != TokenType.ASSIGNMENT)
+                throw new Exception("Expected =");
 
             var value = Advance();
             var variable = new VariableDeclarationExpr(keyword.Declaration, identifier.Lexeme, value.Value);
 
-            // consume terminator
-            Advance();
-            Interpreter.Variables.Add(variable.Identifier, variable.Value);
+            var terminator = Advance();
+            if (terminator.Type != TokenType.TERMINATOR)
+                throw new Exception("Expected ;");
 
             return variable;
         }

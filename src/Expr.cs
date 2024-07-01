@@ -137,18 +137,16 @@ public class VariableDeclarationExpr : Expr
 
 public class AssignmentExpr : Expr 
 {
-    public object Value { get; set; }
-
-    public string Assigner { get; set; }
+    public Expr Assigner { get; set; }
     public string Assignee { get; set; }
 
-    public AssignmentExpr(object value, string assigner, string assignee) 
+    public AssignmentExpr(object value, Expr assigner, string assignee) 
     {
         Type = ExprType.Assignment;
-        Value = value;
         Assigner = assigner;
         Assignee = assignee;
     }
+    public override string ToString() => $"Assignee: {Assignee, -6} || Assigner: {Assigner,-8}\n";
 }
 
 public class MethodCallExpr : Expr 
@@ -163,7 +161,7 @@ public class MethodCallExpr : Expr
         Parameters = parameters;
     }
 
-    public override string ToString() => $"Method: {Identifier} || Params: {Parameters.Count}\n";
+    public override string ToString() => $"Method: {Identifier,-8} || Params: {Parameters.Count}\n";
 }
 
 

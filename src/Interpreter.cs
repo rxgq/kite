@@ -41,17 +41,20 @@ internal class Interpreter
 
     public static object AssignmentExpr(AssignmentExpr expr) 
     {
-        var assigner = Variables[expr.Assigner];
-        var assignee = Variables[expr.Assignee];
+        if (expr.Assigner is IdentifierExpr identExpr) 
+            Variables[expr.Assignee] = Variables[identExpr.Name];
 
-        Variables[expr.Assignee] = assigner;
+        else if (expr.Assigner is NumericExpr numericExpr)
+            Variables[expr.Assignee] = numericExpr.Value;
+
 
         return null;
     }
 
     public static object VariableDeclarationExpr(VariableDeclarationExpr expr) 
     {
-        return new VariableDeclarationExpr(expr.Declaration, expr.Identifier, expr.Value);
+        Variables.Add(expr.Identifier, expr.Value);
+        return null;
     }
 
     public static object MethodExpr(MethodCallExpr expr) 

@@ -267,7 +267,7 @@ internal sealed class Lexer
         string lexeme = CurrentChars().Trim();
 
         if (Token.Keywords.TryGetValue(lexeme, out TokenType tokenType))
-            Tokens.Add(new Token(tokenType, null, lexeme));
+            Tokens.Add(new Token(tokenType, lexeme, lexeme));
         else
             Tokens.Add(new Token(TokenType.IDENTIFIER, null, lexeme));
     }
