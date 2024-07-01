@@ -1,8 +1,4 @@
-﻿var x = 10;
-var y = 35;
+﻿var name = "Ashton Dunderdale";
+var x = "{name}";
 
-x = y;
-x = 10;
-
-echo x; 
-echo y; 
+echo x;

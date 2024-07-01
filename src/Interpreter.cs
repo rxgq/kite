@@ -47,15 +47,46 @@ internal class Interpreter
         else if (expr.Assigner is NumericExpr numericExpr)
             Variables[expr.Assignee] = numericExpr.Value;
 
-
         return null;
     }
 
-    public static object VariableDeclarationExpr(VariableDeclarationExpr expr) 
+
+
+    public static object VariableDeclarationExpr(VariableDeclarationExpr expr)
     {
-        Variables.Add(expr.Identifier, expr.Value);
+        var value = "";
+        if (expr.Value is StringLiteralExpr stringExpr) 
+            value = ProcessString(expr.Value.ToString());
+
+        Variables.Add(expr.Identifier, value);
         return null;
     }
+
+    private static string ProcessString(string value)
+    {
+        var parts = new List<string>();
+        var literalParts = value.Split(new[] { '{', '}' }, StringSplitOptions.None);
+
+        bool isExpression = false;
+        foreach (var part in literalParts)
+        {
+            if (isExpression)
+            {
+                if (Variables.TryGetValue(part, out var variableValue))
+                    parts.Add(variableValue.ToString());
+
+                else
+                    throw new Exception($"Variable {part} not found.");
+            }
+            else
+                parts.Add(part);
+
+            isExpression = !isExpression;
+        }
+
+        return string.Join(string.Empty, parts);
+    }
+
 
     public static object MethodExpr(MethodCallExpr expr) 
     {
@@ -113,6 +144,11 @@ internal class Interpreter
             case "%":
                 if (left is double ml && right is double mr)
                     return ml % mr;
+                throw new Exception("Invalid operands for %");
+
+            case "+=":
+                if (left is double ql && right is double qr)
+                    return ql += qr;
                 throw new Exception("Invalid operands for %");
 
             case "==":

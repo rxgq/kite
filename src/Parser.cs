@@ -36,7 +36,7 @@ public sealed class Parser
             TokenType.GREATER_THAN_EQUALS or TokenType.LESS_THAN_EQUALS or
             TokenType.NUMBER or TokenType.BOOLEAN or
             TokenType.EQUALS or TokenType.NOT_EQUALS => ParseBinary(),
-            
+
             TokenType.INCREMENT or TokenType.DECREMENT or TokenType.NOT => ParseUnary(),
 
             TokenType.ASSIGNMENT or TokenType.IDENTIFIER => ParseAssignment(),
@@ -46,7 +46,6 @@ public sealed class Parser
             _ => throw new JudasException.BadException(),
         };
     }
-
 
     private Expr ParseMethodCall() 
     {
@@ -91,25 +90,28 @@ public sealed class Parser
     {
         Expr assignee = ParsePrimary();
 
-        // consume =
-        var x = Advance();
+        var op = Advance();
+        if (op.Type != TokenType.ASSIGNMENT && op.Type != TokenType.PLUS_EQUALS
+            && op.Type != TokenType.MINUS_EQUALS && op.Type != TokenType.STAR_EQUALS
+            && op.Type != TokenType.SLASH_EQUALS) 
+        {
+            throw new Exception($"Invalid op: {op.Type} for assignment");
+        }
         
         Expr assigner = ParsePrimary();
 
-        // consume ;
-        Advance();
+        var terminator = Advance();
+        if (terminator.Type != TokenType.TERMINATOR)
+            throw new Exception("Expected ;");
 
         if (assignee is IdentifierExpr identAssignee) 
         {
             if (assigner is IdentifierExpr identAssigner)
-                return new AssignmentExpr(x, identAssigner, identAssignee.Name);
+                return new AssignmentExpr(op.Lexeme, identAssigner, identAssignee.Name);
 
             else if (assigner is NumericExpr numericAssigner)
-                return new AssignmentExpr(x, numericAssigner, identAssignee.Name);
-
+                return new AssignmentExpr(op.Lexeme, numericAssigner, identAssignee.Name);
         }
-
-
 
         return new UnknownExpr();
     }
@@ -126,8 +128,8 @@ public sealed class Parser
             if (equals.Type != TokenType.ASSIGNMENT)
                 throw new Exception("Expected =");
 
-            var value = Advance();
-            var variable = new VariableDeclarationExpr(keyword.Declaration, identifier.Lexeme, value.Value);
+            var value = ParsePrimary();
+            var variable = new VariableDeclarationExpr(keyword.Declaration, identifier.Lexeme, value);
 
             var terminator = Advance();
             if (terminator.Type != TokenType.TERMINATOR)
@@ -180,6 +182,7 @@ public sealed class Parser
 
             TokenType.METHOD => new MethodCallExpr(token.Lexeme, null),
             TokenType.KEYWORD => new VariableDeclarationExpr(token.Lexeme, null, null),
+            TokenType.STRING => new StringLiteralExpr(token.Value),
 
             _ => new UnknownExpr(),
         };

@@ -122,9 +122,9 @@ public class VariableDeclarationExpr : Expr
 
     public string Identifier { get; set; }
 
-    public object Value { get; set; }
+    public Expr Value { get; set; }
 
-    public VariableDeclarationExpr(string declaration, string identifer, object value) 
+    public VariableDeclarationExpr(string declaration, string identifer, Expr value) 
     {
         Type = ExprType.VariableDeclaration;
         Declaration = declaration;
@@ -135,14 +135,16 @@ public class VariableDeclarationExpr : Expr
     public override string ToString() => $"Declaration: {Declaration} || Variable: {Identifier} || Value: {Value}\n";
 }
 
-public class AssignmentExpr : Expr 
+public class AssignmentExpr : Expr
 {
+    public string Op { get; set; }
     public Expr Assigner { get; set; }
     public string Assignee { get; set; }
 
-    public AssignmentExpr(object value, Expr assigner, string assignee) 
+    public AssignmentExpr(string op, Expr assigner, string assignee) 
     {
         Type = ExprType.Assignment;
+        Op = op;
         Assigner = assigner;
         Assignee = assignee;
     }
