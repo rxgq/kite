@@ -1,0 +1,8 @@
+﻿var x = 10;
+var z = 50;
+var y = 5;
+
+x = y;
+x = z;
+
+echo x, y;

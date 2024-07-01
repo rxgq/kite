@@ -2,7 +2,7 @@
 
 public enum ExprType
 {
-    Binary, Unary, Identifier, VariableDeclaration,
+    Binary, Unary, Identifier, VariableDeclaration, Assignment,
 
     Numeric, StringLiteral, BooleanLiteral, WhiteSpace,
     
@@ -130,6 +130,24 @@ public class VariableDeclarationExpr : Expr
         Declaration = declaration;
         Identifier = identifer;
         Value = value;
+    }
+
+    public override string ToString() => $"Declaration: {Declaration} || Variable: {Identifier} || Value: {Value}\n";
+}
+
+public class AssignmentExpr : Expr 
+{
+    public object Value { get; set; }
+
+    public string Assigner { get; set; }
+    public string Assignee { get; set; }
+
+    public AssignmentExpr(object value, string assigner, string assignee) 
+    {
+        Type = ExprType.Assignment;
+        Value = value;
+        Assigner = assigner;
+        Assignee = assignee;
     }
 }
 

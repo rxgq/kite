@@ -27,6 +27,9 @@ internal class Standard
     {
         var value = expr.Parameters[1].Value;
 
+        if (value is null) 
+            value = Interpreter.Variables[expr.Parameters[1].Lexeme];
+
         if (value is double count)
             for (int i = 0; i < count; i++)
                 OnEcho(expr);

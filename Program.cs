@@ -5,7 +5,7 @@ internal class Program
 {
     static void Main()
     {
-        var code = File.ReadAllText("C:\\Users\\adunderdale\\test.txt");
+        var code = File.ReadAllText("C:\\Users\\adunderdale\\Projects\\personal\\judas-script\\src\\code.txt");
 
         var lexer = new Lexer(code);
         var tokens = lexer.Tokenize();

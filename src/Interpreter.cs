@@ -32,9 +32,26 @@ internal class Interpreter
             ExprType.Numeric => ((NumericExpr)expr).Value,
             ExprType.BooleanLiteral => ((BooleanLiteralExpr)expr).Value,
             ExprType.MethodCall => MethodExpr((MethodCallExpr)expr),
+            ExprType.VariableDeclaration => VariableDeclarationExpr((VariableDeclarationExpr)expr),
+            ExprType.Assignment => AssignmentExpr((AssignmentExpr)expr),
 
             _ => ExprType.Unknown
         };
+    }
+
+    public static object AssignmentExpr(AssignmentExpr expr) 
+    {
+        var assigner = Variables[expr.Assigner];
+        var assignee = Variables[expr.Assignee];
+
+        Variables[expr.Assignee] = assigner;
+
+        return null;
+    }
+
+    public static object VariableDeclarationExpr(VariableDeclarationExpr expr) 
+    {
+        return new VariableDeclarationExpr(expr.Declaration, expr.Identifier, expr.Value);
     }
 
     public static object MethodExpr(MethodCallExpr expr) 
@@ -73,31 +90,26 @@ internal class Interpreter
             case "+":
                 if (left is double pl && right is double pr)
                     return pl + pr;
-
                 throw new Exception("Invalid operands for +");
 
             case "-":
                 if (left is double sl && right is double sr)
                     return sl - sr;
-
                 throw new Exception("Invalid operands for -");
 
             case "*":
                 if (left is double tl && right is double tp)
                     return tl * tp;
-
                 throw new Exception("Invalid operands for *");
 
             case "/":
                 if (left is double dl && right is double dr)
                     return dl / dr;
-
                 throw new Exception("Invalid operands for /");
 
             case "%":
                 if (left is double ml && right is double mr)
                     return ml % mr;
-
                 throw new Exception("Invalid operands for %");
 
             case "==":
@@ -117,14 +129,12 @@ internal class Interpreter
             case "<":
                 if (left is double gl && right is double gr)
                     return expr.Operator == ">" ? gl > gr : gl < gr;
-
                 throw new Exception("Invalid operands for >");
 
             case ">=":
             case "<=":
                 if (left is double el && right is double er)
                     return expr.Operator == ">=" ? (el > er || el == er) : (el < er || el == er);
-
                 throw new Exception("Invalid operands for >");
 
             case "and":
@@ -157,9 +167,6 @@ internal class Interpreter
                     return !(xnorl ^ xnorr);
                 throw new Exception("Invalid operands for xnor");
 
-
-                throw new Exception("Invalid operands for and");
-
             default:
                 throw new Exception("Binary Expression parsing exception");
         }
@@ -176,17 +183,14 @@ internal class Interpreter
                     return il + 1;
 
                 throw new Exception("Invalid operand type for ++");
-
             case "--":
                 if (value is double dl)
                     return dl - 1;
-
                 throw new Exception("Invalid operand type for --");
 
             case "**":
                 if (value is double el)
                     return Math.Pow(el, 2);
-
                 throw new Exception("Invalid operand type for **");
 
             default:
