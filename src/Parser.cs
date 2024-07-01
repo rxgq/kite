@@ -111,6 +111,9 @@ public sealed class Parser
 
             else if (assigner is NumericExpr numericAssigner)
                 return new AssignmentExpr(op.Lexeme, numericAssigner, identAssignee.Name);
+
+            else if (assigner is StringLiteralExpr stringAssigner)
+                return new AssignmentExpr(op.Lexeme, stringAssigner, identAssignee.Name);
         }
 
         return new UnknownExpr();
@@ -179,10 +182,9 @@ public sealed class Parser
             TokenType.BOOLEAN => new BooleanLiteralExpr(bool.Parse(token.Lexeme)),
             TokenType.IDENTIFIER => new IdentifierExpr(token.Lexeme),
             TokenType.WHITESPACE => new WhiteSpaceExpr(),
-
             TokenType.METHOD => new MethodCallExpr(token.Lexeme, null),
             TokenType.KEYWORD => new VariableDeclarationExpr(token.Lexeme, null, null),
-            TokenType.STRING => new StringLiteralExpr(token.Value),
+            TokenType.STRING => new StringLiteralExpr(token.Value.ToString()),
 
             _ => new UnknownExpr(),
         };

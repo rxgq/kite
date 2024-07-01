@@ -47,22 +47,26 @@ internal class Interpreter
         else if (expr.Assigner is NumericExpr numericExpr)
             Variables[expr.Assignee] = numericExpr.Value;
 
+        else if (expr.Assigner is StringLiteralExpr stringExpr)
+            Variables[expr.Assignee] = ParseStringLiteral(stringExpr.Value);
+
         return null;
     }
 
-
-
     public static object VariableDeclarationExpr(VariableDeclarationExpr expr)
     {
-        var value = "";
-        if (expr.Value is StringLiteralExpr stringExpr) 
-            value = ProcessString(expr.Value.ToString());
+        object value = expr.Value.ToString();
+        if (expr.Value is StringLiteralExpr stringExpr)
+            value = ParseStringLiteral(stringExpr.Value.ToString());
+
+        else if (expr.Value is NumericExpr numericExpr)
+            value = numericExpr.Value;
 
         Variables.Add(expr.Identifier, value);
         return null;
     }
 
-    private static string ProcessString(string value)
+    private static string ParseStringLiteral(string value)
     {
         var parts = new List<string>();
         var literalParts = value.Split(new[] { '{', '}' }, StringSplitOptions.None);
@@ -90,6 +94,13 @@ internal class Interpreter
 
     public static object MethodExpr(MethodCallExpr expr) 
     {
+        for (int i = 0; i < expr.Parameters.Count; i++)
+        {
+            var param = expr.Parameters[i];
+            if (param.Type == TokenType.STRING)
+                expr.Parameters[i].Value = ParseStringLiteral(param.Value.ToString());
+        }
+
         switch (expr.Identifier) 
         {
             case "echo":

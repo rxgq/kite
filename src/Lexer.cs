@@ -28,7 +28,7 @@ public enum TokenType
 public sealed class Token
 {
     public TokenType Type { get; }
-    public object? Value { get; }
+    public object? Value { get; set; }
     public string Lexeme { get; }
 
     public Token(TokenType type, object? value, string lexeme)

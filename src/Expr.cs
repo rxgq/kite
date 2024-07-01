@@ -58,9 +58,9 @@ public class UnaryExpr : Expr
 
 public class StringLiteralExpr : Expr
 {
-    public object Value { get; set; }
+    public string Value { get; set; }
 
-    public StringLiteralExpr(object value)
+    public StringLiteralExpr(string value)
     {
         Type = ExprType.StringLiteral;
         Value = value;
