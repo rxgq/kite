@@ -1,7 +1,0 @@
-﻿var firstName = "Ashton";
-var lastName = "Dunderdale";
-
-var mood = "quite like";
-
-var str = "My name is {firstName} {lastName} and I {mood} programming.";
-echo str;

@@ -1,0 +1,15 @@
+C:\Users\rxgqq\projects\judas\bin\Debug\net8.0\judas.exe
+C:\Users\rxgqq\projects\judas\bin\Debug\net8.0\judas.deps.json
+C:\Users\rxgqq\projects\judas\bin\Debug\net8.0\judas.runtimeconfig.json
+C:\Users\rxgqq\projects\judas\bin\Debug\net8.0\judas.dll
+C:\Users\rxgqq\projects\judas\bin\Debug\net8.0\judas.pdb
+C:\Users\rxgqq\projects\judas\obj\Debug\net8.0\judas.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\rxgqq\projects\judas\obj\Debug\net8.0\judas.AssemblyInfoInputs.cache
+C:\Users\rxgqq\projects\judas\obj\Debug\net8.0\judas.AssemblyInfo.cs
+C:\Users\rxgqq\projects\judas\obj\Debug\net8.0\judas.csproj.CoreCompileInputs.cache
+C:\Users\rxgqq\projects\judas\obj\Debug\net8.0\judas.sourcelink.json
+C:\Users\rxgqq\projects\judas\obj\Debug\net8.0\judas.dll
+C:\Users\rxgqq\projects\judas\obj\Debug\net8.0\refint\judas.dll
+C:\Users\rxgqq\projects\judas\obj\Debug\net8.0\judas.pdb
+C:\Users\rxgqq\projects\judas\obj\Debug\net8.0\judas.genruntimeconfig.cache
+C:\Users\rxgqq\projects\judas\obj\Debug\net8.0\ref\judas.dll

@@ -1,0 +1,4 @@
+var x = 10, y = 20;
+
+const int x = 10, y = 10;
+const mut a = 10;
