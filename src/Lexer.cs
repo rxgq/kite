@@ -8,6 +8,8 @@ internal class Lexer(string source)
 
     public List<Token> Tokenize() {
         while (!IsEof()) {
+            if (IsWhiteSpace()) continue;
+
             Tokens.Add(NextToken());
             Advance();
         }
@@ -68,6 +70,15 @@ internal class Lexer(string source)
             return new(type, lexeme);
 
         return new(TokenType.Identifier, lexeme);
+    }
+
+    private bool IsWhiteSpace() {
+        if (char.IsWhiteSpace(Source[Current])) {
+            Advance();
+            return true;
+        }
+        
+        return false;
     }
 
     private void Advance() => Current++;

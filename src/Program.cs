@@ -13,5 +13,6 @@ internal abstract class Judas {
         var parser = new Parser(tokens);
         parser.Parse();
 
+        parser.Print();
     }
 }
