@@ -1,6 +1,6 @@
 namespace judas;
 
-enum TokenType {
+public enum TokenType {
     Number, 
     Identifier, 
 
@@ -12,6 +12,7 @@ enum TokenType {
     Else,
     For,
     While,
+    Undefined,
 
     And,
     Or,
@@ -32,7 +33,7 @@ enum TokenType {
     Bad
 }
 
-internal class Token {
+public class Token {
     public TokenType Type { get; set; }
     public string Value { get; set; }
 
@@ -45,6 +46,7 @@ internal class Token {
         { "while", TokenType.While },
         { "and", TokenType.And },
         { "or", TokenType.Or },
+        { "undefined", TokenType.Undefined },
     };
 
     public Token(TokenType type, string value) {

@@ -49,15 +49,23 @@ internal class Parser(List<Token> tokens) {
 
         switch (token.Type) {
             case TokenType.Identifier:
-                Advance();
                 return new IdentifierExpression(token.Value);
             
             case TokenType.Number:
-                if (!float.TryParse(token.Value, out float val))
+                if (!float.TryParse(token.Value, out float flt))
                     throw new Exception("Attempted to parse non-float token as float");
 
                 Advance();
-                return new NumericLiteral(val);
+                return new NumericExpression(flt);
+
+            case TokenType.Undefined:
+                return new UndefinedExpression(Tokens[Current].Value);
+
+            case TokenType.LeftParen:
+                Advance();
+                var val = ParseExpression();
+                Advance();
+                return val;
 
             default: throw new Exception("Unkown Token");
         }
