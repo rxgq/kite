@@ -1,30 +1,32 @@
 namespace judas;
 
-internal abstract class Expression {}
+internal abstract class Expression {
 
-internal class BinaryExpression (Expression left, Expression right, TokenType op) : Expression {
-    public Expression Left { get; set; } = left;
-    public Expression Right { get; set; } = right;
-    public TokenType Operator { get; set; } = op;
-
-    public override string ToString()
-        => $"[{Left} {Operator} {Right}]";
 }
 
-internal class LogicalExpression (Expression left, Expression right, TokenType op) : Expression {
+internal class BinaryExpression (Expression left, Expression right, Token op) : Expression {
     public Expression Left { get; set; } = left;
     public Expression Right { get; set; } = right;
-    public TokenType Operator { get; set; } = op;
+    public Token Operator { get; set; } = op;
 
     public override string ToString()
-        => $"[{Left} {Operator} {Right}]";
+        => $"({Left} {Operator.Value} {Right})";
+}
+
+internal class LogicalExpression (Expression left, Expression right, Token op) : Expression {
+    public Expression Left { get; set; } = left;
+    public Expression Right { get; set; } = right;
+    public Token Operator { get; set; } = op;
+
+    public override string ToString()
+        => $"({Left} {Operator} {Right})";
 }
 
 internal class IdentifierExpression (string symbol) : Expression {
     public string Symbol { get; set; } = symbol;
 
     public override string ToString()
-        => $"Identifier: [{Symbol}]";
+        => Symbol;
 }
 
 
@@ -32,7 +34,7 @@ internal class NumericLiteral(float value) : Expression {
     public float Value { get; set; } = value;
 
     public override string ToString()
-        => $"Numeric: [{Value}]";
+        => Value.ToString();
 }
 
 internal class StringLiteral(string value) : Expression {

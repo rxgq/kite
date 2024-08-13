@@ -15,7 +15,33 @@ internal class Parser(List<Token> tokens) {
     }
 
     private Expression ParseExpression() {
-        return ParsePrimary();
+        return ParseAdditive();
+    }
+
+    private Expression ParseAdditive () {
+        var left = ParseMultiplicative();
+
+        while (Match("+") || Match("-")) {
+            var op = Consume();
+            var right = ParseMultiplicative();
+
+            left = new BinaryExpression(left, right, op);
+        }
+
+        return left;
+    }
+
+    private Expression ParseMultiplicative() {
+        var left = ParsePrimary();
+
+        while (Match("*") || Match("/") || Match("%")) {
+            var op = Consume();
+            var right = ParsePrimary();
+
+            left = new BinaryExpression(left, right, op);
+        }
+
+        return left;
     }
 
     private Expression ParsePrimary() {
@@ -23,23 +49,32 @@ internal class Parser(List<Token> tokens) {
 
         switch (token.Type) {
             case TokenType.Identifier:
+                Advance();
                 return new IdentifierExpression(token.Value);
             
             case TokenType.Number:
                 if (!float.TryParse(token.Value, out float val))
                     throw new Exception("Attempted to parse non-float token as float");
 
+                Advance();
                 return new NumericLiteral(val);
 
             default: throw new Exception("Unkown Token");
         }
     }
 
+    private bool Match(string symbol)
+        => !IsEof() && Tokens[Current].Value == symbol;
+
+    private Token Consume() {
+        return Tokens[Current++];
+    }
+
     private void Advance() => Current++; 
 
     private bool IsEof()
-        => Tokens[Current].Type == TokenType.Eof;
-
+        => Current >= Tokens.Count || Tokens[Current].Type == TokenType.Eof;
+        
     public void Print() {
         Console.WriteLine();
         foreach (var expr in Program.Body)
