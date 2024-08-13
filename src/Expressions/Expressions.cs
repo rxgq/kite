@@ -18,13 +18,14 @@ public abstract class Expression(ExprType kind) {
     public ExprType Kind { get; set; } = kind;
 }
 
-public class VariableDeclarator(string identifier, string literal, Expression init) : Expression(ExprType.VariableDeclaratorExpr) {
+public class VariableDeclarator(string declarator, string identifier, Expression? value, bool isMutable = false) : Expression(ExprType.VariableDeclaratorExpr) {
+    public string Declarator { get; set; } = declarator;
+    public bool IsMutable { get; set; } = isMutable;
     public string Identifier { get; set; } = identifier;
-    public string Literal { get; set; } = literal;
-    public Expression Init { get; set; } = init;
+    public Expression? Value { get; set; } = value;
 
     public override string ToString()
-        => $"[{Identifier} {Literal}: {Init}]";
+        => $"[{Declarator} {Identifier}: {Value}]";
 }
 
 public class BinaryExpression (Expression left, Expression right, Token op) : Expression(ExprType.BinaryExpr) {

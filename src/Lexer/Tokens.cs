@@ -4,8 +4,8 @@ public enum TokenType {
     Number, 
     Identifier, 
 
-    Var,
-    Const,
+    Let,
+    Mut,
 
     If,
     Elif,
@@ -38,7 +38,8 @@ public class Token {
     public string Value { get; set; }
 
     public static readonly Dictionary<string, TokenType> Keywords = new() {
-        { "var", TokenType.Var },
+        { "let", TokenType.Let },
+        { "mut", TokenType.Mut },
         { "if", TokenType.If },
         { "elif", TokenType.Elif },
         { "else", TokenType.Else },

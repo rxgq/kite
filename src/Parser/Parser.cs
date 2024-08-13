@@ -7,11 +7,39 @@ internal class Parser(List<Token> tokens) {
 
     public Program Parse() {
         while (!IsEof()) {
-            Program.Body.Add(ParseExpression());
-            Advance();
+            Program.Body.Add(ParseStatement());
         }
 
         return Program;
+    }
+
+    private Expression ParseStatement() {
+        return Tokens[Current].Type switch
+        {
+            TokenType.Let or TokenType.Mut => ParseVariableDeclaration(),
+            _ => ParseExpression(),
+        };
+    }
+
+    private Expression ParseVariableDeclaration() {
+        var declarator = Consume();
+        var identifier = ExpectToBe(TokenType.Identifier, "Expected identifier after declaration");
+        var isMut = declarator.Type == TokenType.Mut;
+
+        var next = Consume();
+        if (next.Type == TokenType.Assignment) {
+            var val = ParseExpression();
+            ExpectToBe(TokenType.SemiColon, "Expected semi colon after variable declaration");
+
+            return new VariableDeclarator(declarator.Value, identifier.Value, val, isMut);
+        } 
+        else if (next.Type == TokenType.SemiColon) {
+            if (!isMut) throw new Exception("Cannot declare a constant variable as undefined");
+
+            return new VariableDeclarator(declarator.Value, identifier.Value, null, isMut);
+        }
+        
+        throw new Exception("Unexpected token found in variable declaration");
     }
 
     private Expression ParseExpression() {
@@ -49,6 +77,7 @@ internal class Parser(List<Token> tokens) {
 
         switch (token.Type) {
             case TokenType.Identifier:
+                Advance();
                 return new IdentifierExpression(token.Value);
             
             case TokenType.Number:
@@ -67,8 +96,13 @@ internal class Parser(List<Token> tokens) {
                 Advance();
                 return val;
 
-            default: throw new Exception("Unkown Token");
+            default: throw new Exception("Unkown Token found while parsing primary expression");
         }
+    }
+
+    private Token ExpectToBe(TokenType type, string msg) {
+        if (Tokens[Current].Type != type) throw new Exception(msg);
+        return Consume();
     }
 
     private bool Match(string symbol)
