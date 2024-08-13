@@ -15,7 +15,7 @@ public class UndefinedType : ValueType {
 
 public class NumericType : ValueType {
 
-    public NumericType(float val) {
+    public NumericType(double val) {
         Type = "number";
         Value = val;
     }

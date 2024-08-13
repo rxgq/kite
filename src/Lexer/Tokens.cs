@@ -7,12 +7,16 @@ public enum TokenType {
     Let,
     Mut,
 
+    True,
+    False,
+    Undefined,
+    Default,
+
     If,
     Elif,
     Else,
     For,
     While,
-    Undefined,
 
     And,
     Or,
@@ -47,6 +51,9 @@ public class Token {
         { "while", TokenType.While },
         { "and", TokenType.And },
         { "or", TokenType.Or },
+        { "true", TokenType.True },
+        { "false", TokenType.False },
+        { "default", TokenType.Default },
         { "undefined", TokenType.Undefined },
     };
 

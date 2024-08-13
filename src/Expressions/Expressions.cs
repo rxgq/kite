@@ -2,12 +2,14 @@ namespace judas;
 
 public enum ExprType {
     VariableDeclaratorExpr,
+    AssignmentExpr,
     BinaryExpr,
     LogicalExpr,
     IdentifierExpr,
     UndefinedExpr,
     NumericExpr,
     StringExpr,
+    BooleanExpr,
 }
 
 public class Program {
@@ -26,6 +28,14 @@ public class VariableDeclarator(string declarator, string identifier, Expression
 
     public override string ToString()
         => $"[{Declarator} {Identifier}: {Value}]";
+}
+
+public class AssignmentExpression(Expression assignee, Expression value) : Expression(ExprType.AssignmentExpr) {
+    public Expression Assignee { get; set; } = assignee;
+    public Expression Value { get; set; } = value;
+
+    public override string ToString()
+        => $"[{Assignee} = {Value}]";
 }
 
 public class BinaryExpression (Expression left, Expression right, Token op) : Expression(ExprType.BinaryExpr) {
@@ -57,7 +67,7 @@ public class UndefinedExpression(string symbol) : Expression(ExprType.UndefinedE
     public string Symbol { get; set; } = symbol;
 
     public override string ToString()
-        => $"[UNDEF: {Symbol}]";
+        => $"[Undefined]";
 }
 
 public class NumericExpression(float value) : Expression(ExprType.NumericExpr) {
@@ -72,4 +82,11 @@ public class StringExpression(string value) : Expression(ExprType.StringExpr) {
     
     public override string ToString()
         => $"String: [{Value}]";
+}
+
+public class BooleanExpression(bool value) : Expression(ExprType.BooleanExpr) {
+    public bool Value { get; set; } = value;
+
+    public override string ToString()
+        => Value.ToString();
 }

@@ -29,6 +29,7 @@ internal class Parser(List<Token> tokens) {
         var next = Consume();
         if (next.Type == TokenType.Assignment) {
             var val = ParseExpression();
+            
             ExpectToBe(TokenType.SemiColon, "Expected semi colon after variable declaration");
 
             return new VariableDeclarator(declarator.Value, identifier.Value, val, isMut);
@@ -43,7 +44,23 @@ internal class Parser(List<Token> tokens) {
     }
 
     private Expression ParseExpression() {
-        return ParseAdditive();
+        return ParseAssignment();
+    }
+
+    
+    private Expression ParseAssignment() {
+        var left = ParseAdditive();
+        
+        if (Tokens[Current].Type == TokenType.Assignment) {
+            Advance();
+
+            var val = ParseAssignment();
+            ExpectToBe(TokenType.SemiColon, "Expected semi colon after assignment expression");
+
+            return new AssignmentExpression(left, val);
+        }
+
+        return left;
     }
 
     private Expression ParseAdditive () {
@@ -62,7 +79,7 @@ internal class Parser(List<Token> tokens) {
     private Expression ParseMultiplicative() {
         var left = ParsePrimary();
 
-        while (Match("*") || Match("/") || Match("%")) {
+        while (Match("*") || Match("/") || Match("%") || Match("**")) {
             var op = Consume();
             var right = ParsePrimary();
 
@@ -88,7 +105,12 @@ internal class Parser(List<Token> tokens) {
                 return new NumericExpression(flt);
 
             case TokenType.Undefined:
+                Advance();
                 return new UndefinedExpression(Tokens[Current].Value);
+
+            case TokenType.False or TokenType.True:
+                Advance();
+                return new BooleanExpression(token.Type == TokenType.True);
 
             case TokenType.LeftParen:
                 Advance();
@@ -96,7 +118,7 @@ internal class Parser(List<Token> tokens) {
                 Advance();
                 return val;
 
-            default: throw new Exception("Unkown Token found while parsing primary expression");
+            default: throw new Exception($"Unkown Token found while parsing primary expression '{Tokens[Current].Type}'");
         }
     }
 

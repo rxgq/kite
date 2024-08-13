@@ -27,7 +27,8 @@ internal class Lexer(string source)
             ',' => new(TokenType.Comma, c),
             ';' => new(TokenType.SemiColon, c),
 
-            '+' or '-' or '*' or '/' or '%' => new(TokenType.BinaryOp, c),
+            '+' or '-' or '/' or '%' => new(TokenType.BinaryOp, c),
+            '*' => OnStar(),
             '=' => OnEquals(),
 
             _ when char.IsDigit(c) => OnNumber(),
@@ -36,6 +37,15 @@ internal class Lexer(string source)
             ' ' => new(TokenType.Space, Source[Current]),
             _ => new(TokenType.Bad, c)
         };
+    }
+
+    private Token OnStar() {
+        if (Peek() == '*') {
+            Advance();
+            return new(TokenType.BinaryOp, "**");
+        }
+
+        return new(TokenType.BinaryOp, '*');
     }
 
     private Token OnEquals() {

@@ -1,6 +1,6 @@
 namespace judas;
 
-public class Environment(Environment parent = null)
+public class Environment(Environment? parent = null)
 {
     public Environment? Parent { get; set; } = parent;
     public Dictionary<string, (ValueType, bool)> Variables { get; set; } = [];
@@ -29,7 +29,7 @@ public class Environment(Environment parent = null)
         return Parent.ResolveVariable(variable);
     }
 
-    public ValueType? LookupVariable(string variable) {
-        return Variables.TryGetValue(variable, out var val) ? val.Item1 : null; 
+    public (ValueType, bool)? LookupVariable(string variable) {
+        return Variables.TryGetValue(variable, out var val) ? val : null; 
     }
 }
