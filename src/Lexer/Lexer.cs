@@ -69,7 +69,7 @@ internal class Lexer(string source)
             return new(TokenType.NotEqual, "!=");
         }
 
-        return new(TokenType.Not, '!');
+        return new(TokenType.Bad, Source[Current]);
     }
 
     private Token OnStar() {

@@ -71,31 +71,44 @@ internal class Parser(List<Token> tokens) {
     }
 
     private Expression ParseExpression() {
-        return ParseAssignment();
+        return ParseLogicalOr();
     }
 
-    // private Expression ParseLogicalOr() {
-    //     var expr = ParseLogicalAnd();
+    private Expression ParseLogicalOr() {
+        var expr = ParseLogicalAnd();
 
-    // }
+        while (Match("or")) {
+            var op = Consume();
+            var right = ParseLogicalAnd();
+            expr = new LogicalExpression(expr, right, op);
+        }
 
-    // private Expression ParseLogicalAnd() {
-    //     var expr = ParseEquality();
-        
-    // }
+        return expr;
+    }
 
-    // private Expression ParseEquality() {
-    //     var expr = ParseRelational();
+    private Expression ParseLogicalAnd() {
+        var expr = ParseRelational();
 
-    // }
+        while (Match("and")) {
+            var op = Consume();
+            var right = ParseRelational();
+            expr = new LogicalExpression(expr, right, op);
+        }
 
-    // private Expression ParseRelational() {
-    //     var expr = ParseUnary();
+        return expr;
+    }
 
-    //     if (Match(">") || Match("<") || Match(">=") || Match("<=")) {
+    private Expression ParseRelational() {
+        var expression = ParseAdditive();
 
-    //     }
-    // }
+        while (Match(">") || Match("<") || Match(">=") || Match("<=") || Match("!=") || Match("==")) {
+            var operatorToken = Consume();
+            var right = ParseAdditive();
+            expression = new RelationalExpression(expression, right, operatorToken);
+        }
+
+        return expression;
+    }
 
     private Expression ParseAssignment() {
         var left = ParseAdditive();
@@ -126,7 +139,7 @@ internal class Parser(List<Token> tokens) {
     }
     
     private Expression ParseUnary() {
-        if (Match("-") || Match("!")) {
+        if (Match("-") || Match("not")) {
             var op = Consume();
             var right = ParseUnary();
             return new UnaryExpression(op, right);

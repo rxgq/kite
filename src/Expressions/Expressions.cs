@@ -7,12 +7,13 @@ public enum ExprType {
     AssignmentExpr,
     BinaryExpr,
     LogicalExpr,
+    RelationalExpr,
     UnaryExpr,
     IdentifierExpr,
     UndefinedExpr,
     NumericExpr,
     StringExpr,
-    BooleanExpr,
+    BoolExpr,
 }
 
 public class Program {
@@ -63,7 +64,7 @@ public class BinaryExpression (Expression left, Expression right, Token op) : Ex
     public Token Operator { get; set; } = op;
 
     public override string ToString()
-        => $"({Left} {Operator.Value} {Right})";
+        => $"BIN: ({Left} {Operator.Value} {Right})";
 }
 
 public class LogicalExpression (Expression left, Expression right, Token op) : Expression(ExprType.LogicalExpr) {
@@ -72,7 +73,16 @@ public class LogicalExpression (Expression left, Expression right, Token op) : E
     public Token Operator { get; set; } = op;
 
     public override string ToString()
-        => $"({Left} {Operator} {Right})";
+        => $"LOG: ({Left} {Operator} {Right})";
+}
+
+public class RelationalExpression (Expression left, Expression right, Token op) : Expression(ExprType.RelationalExpr) {
+    public Expression Left { get; set; } = left;
+    public Expression Right { get; set; } = right;
+    public Token Operator { get; set; } = op;
+
+    public override string ToString()
+        => $"REL: ({Left} {Operator} {Right})";
 }
 
 public class UnaryExpression (Token op, Expression right) : Expression(ExprType.UnaryExpr) {
@@ -111,7 +121,7 @@ public class StringExpression(string value) : Expression(ExprType.StringExpr) {
         => $"String: [{Value}]";
 }
 
-public class BooleanExpression(bool value) : Expression(ExprType.BooleanExpr) {
+public class BooleanExpression(bool value) : Expression(ExprType.BoolExpr) {
     public bool Value { get; set; } = value;
 
     public override string ToString()

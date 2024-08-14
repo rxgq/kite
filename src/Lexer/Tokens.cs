@@ -57,6 +57,7 @@ public class Token {
         { "while", TokenType.While },
         { "and", TokenType.And },
         { "or", TokenType.Or },
+        { "not", TokenType.Not },
         { "true", TokenType.True },
         { "false", TokenType.False },
         { "default", TokenType.Default },

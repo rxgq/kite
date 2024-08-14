@@ -19,11 +19,14 @@ public class Interpreter(Program program)
     private ValueType InterpretExpression(Expression expr, Environment env) {
         return expr.Kind switch {
             ExprType.NumericExpr => new NumericType(((NumericExpression)expr).Value),
+            ExprType.BoolExpr => new BoolType(((BooleanExpression)expr).Value ? "true" : "false"),
             ExprType.BinaryExpr => InterpretBinaryExpr((BinaryExpression)expr, env),
             ExprType.UnaryExpr => InterpretUnaryExpression((UnaryExpression)expr, env),
+            ExprType.RelationalExpr => InterpretRelationalExpr((RelationalExpression)expr, env),
             ExprType.IdentifierExpr => InterpretIdentifier((IdentifierExpression)expr, env),
             ExprType.VariableDeclaratorExpr => InterpretVariableDeclaration((VariableDeclarator)expr, env),
             ExprType.AssignmentExpr => InterpretAssignment((AssignmentExpression)expr, env),
+            ExprType.LogicalExpr => InterpretLogicalExpr((LogicalExpression)expr, env),
             //ExprType.IfStatementExpr => InterpretIfStatement((IfStatement)expr, env),
             _ => new UndefinedType(),
         };
@@ -73,13 +76,60 @@ public class Interpreter(Program program)
             throw new Exception("Attempted to modify or reference undefined variable");
     }
 
-    private NumericType InterpretUnaryExpression(UnaryExpression expr, Environment env) {
+    private ValueType InterpretUnaryExpression(UnaryExpression expr, Environment env) {
+        var rightValue = InterpretExpression(expr.Right, env);
+
+        if (rightValue is NumericType numericValue) {
+            double right = (double)numericValue.Value!;
+
+            return expr.Operator.Value switch {
+                "-" => new NumericType(-right),
+                _ => throw new Exception($"Unexpected numeric unary operator '{expr.Operator.Value}'"),
+            };
+        }
+
+        if (rightValue is BoolType boolValue) {
+            bool right = (bool)boolValue.Value!;
+
+            return expr.Operator.Value switch {
+                "not" => new BoolType(!right ? "true" : "false"),
+                _ => throw new Exception($"Unexpected boolean unary operator '{expr.Operator.Value}'"),
+            };
+        }
+
+        throw new Exception($"Unsupported type '{rightValue.GetType()}' for unary operation");
+    }
+
+
+    private BoolType InterpretLogicalExpr(LogicalExpression expr, Environment env) {
+        BoolType leftValue = (BoolType)InterpretExpression(expr.Left, env);
+        BoolType rightValue = (BoolType)InterpretExpression(expr.Right, env);
+
+        bool left = (bool)leftValue.Value!;
+        bool right = (bool)rightValue.Value!;
+
+        return expr.Operator.Value switch {
+            "and" => new(left && right ? "true" : "false"),
+            "or" => new(left || right ? "true" : "false"),
+            _ => throw new Exception($"Unexpected token found while interpreting logical expression '{expr.Operator.Value}'"),
+        };
+    }
+
+    private BoolType InterpretRelationalExpr(RelationalExpression expr, Environment env) {
+        NumericType leftValue = (NumericType)InterpretExpression(expr.Left, env);
         NumericType rightValue = (NumericType)InterpretExpression(expr.Right, env);
-        
+
+        double left = (double)leftValue.Value!;
         double right = (double)rightValue.Value!;
 
         return expr.Operator.Value switch {
-            "-" => new NumericType(-right),
+            ">" => new(left > right ? "true" : "false"),
+            "<" => new(left < right ? "true" : "false"),
+            "<=" => new(left <= right ? "true" : "false"),
+            ">=" => new(left <= right ? "true" : "false"),
+            "!=" => new(left != right ? "true" : "false"),
+            "==" => new(left == right ? "true" : "false"),
+            _ => throw new Exception($"Unexpected token found while interpreting relational expression '{expr.Operator.Value}'"),
         };
     }
 
@@ -91,13 +141,13 @@ public class Interpreter(Program program)
         double right = (double)rightValue.Value!;
 
         return expr.Operator.Value switch {
-            "+" => new NumericType(left + right),
-            "-" => new NumericType(left - right),
-            "*" => new NumericType(left * right),
-            "/" => new NumericType(left / right),
-            "%" => new NumericType(left % right),
-            "**" => new NumericType(Math.Pow(left, right)),
-            _ => throw new Exception("Unexpected token found while parsing binary expression"),
+            "+" => new(left + right),
+            "-" => new(left - right),
+            "*" => new(left * right),
+            "/" => new(left / right),
+            "%" => new(left % right),
+            "**" => new(Math.Pow(left, right)),
+            _ => throw new Exception($"Unexpected token found while interpreting binary expression '{expr.Operator.Value}'"),
         };
     }
 }
