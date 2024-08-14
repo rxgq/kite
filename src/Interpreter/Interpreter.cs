@@ -57,7 +57,8 @@ public class Interpreter(Program program)
         if (env.LookupVariable(variable.Symbol) is null)
             throw new Exception("Attempted to modify or update undeclared variable");
 
-        if (!env.LookupVariable(variable.Symbol)!.Value.Item2)
+        var isMutable = env.LookupVariable(variable.Symbol)!.Value.Item2;
+        if (!isMutable)
             throw new Exception("Attempted to reassign constant variable");
 
         var value = expr.Value is not null 

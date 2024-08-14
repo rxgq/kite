@@ -15,7 +15,7 @@ public class Environment(Environment? parent = null)
 
     public ValueType AssignVariable(string variable, ValueType type) {
         var env = ResolveVariable(variable);
-        env.Variables[variable] = (type, false);
+        env.Variables[variable] = (type, true);
 
         return type;
     }
