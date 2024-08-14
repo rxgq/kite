@@ -137,18 +137,24 @@ internal class Lexer(string source)
 
     private Token OnLetter() {
         int start = Current;
+        
         while (!IsEof() && char.IsLetter(Source[Current])) {
             Advance();
         }
 
-        Current--;
-        var lexeme = Source[start..(Current + 1)];
+        while (!IsEof() && (char.IsLetter(Source[Current]) || char.IsDigit(Source[Current]) || Source[Current] == '_')) {
+            Advance();
+        }
 
+        Current--;
+
+        var lexeme = Source[start..(Current + 1)];
         if (Token.Keywords.TryGetValue(lexeme, out TokenType type))
             return new(type, lexeme);
 
         return new(TokenType.Identifier, lexeme);
     }
+
 
     private bool IsWhiteSpace() {
         if (char.IsWhiteSpace(Source[Current])) {
