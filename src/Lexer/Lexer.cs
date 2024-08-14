@@ -29,7 +29,11 @@ internal class Lexer(string source)
             ',' => new(TokenType.Comma, c),
             ';' => new(TokenType.SemiColon, c),
 
-            '+' or '-' or '/' or '%' => new(TokenType.BinaryOp, c),
+            '+' => OnPlus(),
+            '-' => OnMinus(),
+
+            '/' or '%' => new(TokenType.BinaryOp, c),
+            '&' or '|' or '^' => new(TokenType.BinaryOp, c),
             '*' => OnStar(),
 
             '!' => OnNot(),
@@ -70,6 +74,24 @@ internal class Lexer(string source)
         }
 
         return new(TokenType.Bad, Source[Current]);
+    }
+
+    private Token OnPlus() {
+        if (Peek() == '+') {
+            Advance();
+            return new(TokenType.Inc, "++");
+        }
+
+        return new(TokenType.BinaryOp, '+');
+    }
+
+    private Token OnMinus() {
+        if (Peek() == '-') {
+            Advance();
+            return new(TokenType.Dec, "--");
+        }
+
+        return new(TokenType.BinaryOp, '-');
     }
 
     private Token OnStar() {

@@ -30,6 +30,8 @@ public enum TokenType {
     LessThan,
     GreaterThanEq,
     LessThanEq,
+    Inc,
+    Dec,
 
     LeftParen, 
     RightParen,

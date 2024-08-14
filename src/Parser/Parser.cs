@@ -29,9 +29,7 @@ internal class Parser(List<Token> tokens) {
         var condition = ParseExpression();
 
         ExpectToBe(TokenType.LeftBrace, "Expected '{' after condition");
-
         Expression? consequent = ParseBlockStatement();
-
         ExpectToBe(TokenType.RightBrace, "Expected '}' after condition");
 
         return new IfStatement(condition, consequent as BlockStatement);
@@ -71,7 +69,22 @@ internal class Parser(List<Token> tokens) {
     }
 
     private Expression ParseExpression() {
-        return ParseLogicalOr();
+        return ParseAssignment();
+    }
+    
+    private Expression ParseAssignment() {
+        var left = ParseLogicalOr();
+        
+        if (Tokens[Current].Type == TokenType.Assignment) {
+            Advance();
+
+            var val = ParseAssignment();
+            ExpectToBe(TokenType.SemiColon, "Expected semi colon after assignment expression");
+            
+            return new AssignmentExpression(left, val);
+        }
+
+        return left;
     }
 
     private Expression ParseLogicalOr() {
@@ -87,16 +100,29 @@ internal class Parser(List<Token> tokens) {
     }
 
     private Expression ParseLogicalAnd() {
-        var expr = ParseRelational();
+        var expr = ParseBitwise();
 
         while (Match("and")) {
             var op = Consume();
-            var right = ParseRelational();
+            var right = ParseBitwise();
             expr = new LogicalExpression(expr, right, op);
         }
 
         return expr;
     }
+    
+    private Expression ParseBitwise() {
+        var expr = ParseRelational();
+
+        while (Match("&") || Match("|") || Match("^") || Match("<<") || Match(">>")) {
+            var op = Consume();
+            var right = ParseRelational();
+            expr = new BinaryExpression(expr, right, op);
+        }
+
+        return expr;
+    }
+
 
     private Expression ParseRelational() {
         var expression = ParseAdditive();
@@ -108,21 +134,6 @@ internal class Parser(List<Token> tokens) {
         }
 
         return expression;
-    }
-
-    private Expression ParseAssignment() {
-        var left = ParseAdditive();
-        
-        if (Tokens[Current].Type == TokenType.Assignment) {
-            Advance();
-
-            var val = ParseAssignment();
-            ExpectToBe(TokenType.SemiColon, "Expected semi colon after assignment expression");
-            
-            return new AssignmentExpression(left, val);
-        }
-
-        return left;
     }
 
     private Expression ParseAdditive () {
@@ -137,16 +148,6 @@ internal class Parser(List<Token> tokens) {
 
         return left;
     }
-    
-    private Expression ParseUnary() {
-        if (Match("-") || Match("not")) {
-            var op = Consume();
-            var right = ParseUnary();
-            return new UnaryExpression(op, right);
-        }
-
-        return ParsePrimary(); 
-    }
 
     private Expression ParseMultiplicative() {
         var left = ParseUnary();
@@ -159,6 +160,16 @@ internal class Parser(List<Token> tokens) {
         }
 
         return left;
+    }
+    
+    private Expression ParseUnary() {
+        if (Match("-") || Match("not") || Match("~") || Match("++") || Match("--")) {
+            var op = Consume();
+            var right = ParseUnary();
+            return new UnaryExpression(op, right);
+        }
+
+        return ParsePrimary(); 
     }
 
     private Expression ParsePrimary() {

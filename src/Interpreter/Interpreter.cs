@@ -84,6 +84,9 @@ public class Interpreter(Program program)
 
             return expr.Operator.Value switch {
                 "-" => new NumericType(-right),
+                "~" => new NumericType(~(int)right),
+                "++" => new NumericType(++right),
+                "--" => new NumericType(--right),
                 _ => throw new Exception($"Unexpected numeric unary operator '{expr.Operator.Value}'"),
             };
         }
@@ -147,6 +150,9 @@ public class Interpreter(Program program)
             "/" => new(left / right),
             "%" => new(left % right),
             "**" => new(Math.Pow(left, right)),
+            "&" => new((int)left & (int)right),
+            "|" => new((int)left | (int)right),
+            "^" => new((int)left ^ (int)right),
             _ => throw new Exception($"Unexpected token found while interpreting binary expression '{expr.Operator.Value}'"),
         };
     }

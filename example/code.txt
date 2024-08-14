@@ -1,1 +1,2 @@
-!
+mut x = true;
+let y = not x;
