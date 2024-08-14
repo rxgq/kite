@@ -1,8 +1,14 @@
-mut x = 10;
+mut x = true;
+mut z = 0;
 
-if x > 10 {
-    x = 1;
+if x {
+    z = z + 1;
 }
 
-x = x + 1;
-x = y;
+if not x {
+   z = z + 1;
+} else {
+    z = z + 10;
+}
+
+z = z + 0;

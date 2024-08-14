@@ -32,7 +32,7 @@ public class Interpreter(Program program)
         };
     }
 
-    private ValueType? InterpretIfStatement(IfStatement ifStmt, Environment env) {
+    private ValueType InterpretIfStatement(IfStatement ifStmt, Environment env) {
         var conditionValue = InterpretExpression(ifStmt.Condition, env);
 
         if (conditionValue is not BoolType boolCondition) {
@@ -43,10 +43,17 @@ public class Interpreter(Program program)
             foreach (var statement in ifStmt.Consequent!.Body) {
                 InterpretExpression(statement, env);
             }
+            return conditionValue;
         }
 
-        return null;
+        if (ifStmt.Alternate != null) {
+            return InterpretIfStatement(ifStmt.Alternate, env);
+        }
+
+        return conditionValue;
     }
+
+
 
     private ValueType InterpretVariableDeclaration(VariableDeclarator expr, Environment env) {
         var variable = env.LookupVariable(expr.Identifier);

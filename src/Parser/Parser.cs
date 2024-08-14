@@ -29,10 +29,36 @@ internal class Parser(List<Token> tokens) {
         var condition = ParseExpression();
 
         ExpectToBe(TokenType.LeftBrace, "Expected '{' after condition");
-        Expression? consequent = ParseBlockStatement();
+        var consequent = (BlockStatement)ParseBlockStatement();
         ExpectToBe(TokenType.RightBrace, "Expected '}' after condition");
 
-        return new IfStatement(condition, consequent as BlockStatement);
+        IfStatement? rootIf = new IfStatement(condition, consequent);
+        IfStatement? currentIf = rootIf;
+
+        while (Match("elif")) {
+            Advance();
+            var elifCondition = ParseExpression();
+
+            ExpectToBe(TokenType.LeftBrace, "Expected '{' after elif condition");
+            var elifConsequent = (BlockStatement)ParseBlockStatement();
+            ExpectToBe(TokenType.RightBrace, "Expected '}' after elif condition");
+
+            var elifStatement = new IfStatement(elifCondition, elifConsequent);
+
+            currentIf.Alternate = elifStatement;
+            currentIf = elifStatement;
+        }
+
+        if (Match("else")) {
+            Advance();
+            ExpectToBe(TokenType.LeftBrace, "Expected '{' after else");
+            var elseBranch = (BlockStatement)ParseBlockStatement();
+            ExpectToBe(TokenType.RightBrace, "Expected '}' after else");
+
+            currentIf.Alternate = new IfStatement(new BooleanExpression(true), elseBranch);
+        }
+
+        return rootIf;
     }
 
     private Expression ParseBlockStatement() {

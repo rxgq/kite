@@ -21,6 +21,14 @@ public class NumericType : ValueType {
     }
 }
 
+public class StringType : ValueType {
+
+    public StringType(string val) {
+        Type = "string";
+        Value = val;
+    }
+}
+
 public class BoolType : ValueType {
 
     public BoolType(string val) {

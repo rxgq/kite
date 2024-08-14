@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Judas")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+19e918d722e9d2ac6557f30f065c90ac84ffb3e9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b01d461ad30ea44c97c85fbf76f0214933481d9c")]
 [assembly: System.Reflection.AssemblyProductAttribute("Judas")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Judas")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
