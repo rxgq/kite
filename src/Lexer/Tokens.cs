@@ -3,6 +3,7 @@ namespace judas;
 public enum TokenType {
     Number, 
     Identifier, 
+    String,
 
     Let,
     Mut,

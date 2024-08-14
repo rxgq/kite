@@ -187,6 +187,10 @@ internal class Parser(List<Token> tokens) {
                 Advance();
                 return new NumericExpression(flt);
 
+            case TokenType.String:
+                Advance();
+                return new StringExpression(token.Value);
+
             case TokenType.Undefined:
                 Advance();
                 return new UndefinedExpression(Tokens[Current].Value);

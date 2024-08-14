@@ -2,7 +2,7 @@ namespace judas;
 
 public enum ExprType {
     IfStatementExpr,
-    BlockStatement,
+    BlockStatementExpr,
     VariableDeclaratorExpr,
     AssignmentExpr,
     BinaryExpr,
@@ -33,7 +33,7 @@ public class IfStatement(Expression condition, BlockStatement? consequent, IfSta
         => $"[if {Condition} {Consequent} | {Alternate}]";
 }
 
-public class BlockStatement(List<Expression> body) : Expression(ExprType.BlockStatement) {
+public class BlockStatement(List<Expression> body) : Expression(ExprType.BlockStatementExpr) {
     public List<Expression> Body { get; set; } = body;
 
     public override string ToString()

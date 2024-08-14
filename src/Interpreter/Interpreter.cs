@@ -27,14 +27,26 @@ public class Interpreter(Program program)
             ExprType.VariableDeclaratorExpr => InterpretVariableDeclaration((VariableDeclarator)expr, env),
             ExprType.AssignmentExpr => InterpretAssignment((AssignmentExpression)expr, env),
             ExprType.LogicalExpr => InterpretLogicalExpr((LogicalExpression)expr, env),
-            //ExprType.IfStatementExpr => InterpretIfStatement((IfStatement)expr, env),
+            ExprType.IfStatementExpr => InterpretIfStatement((IfStatement)expr, env),
             _ => new UndefinedType(),
         };
     }
 
-    // private ValueType InterpretIfStatement(IfStatement ifStmt, Environment env) {
+    private ValueType? InterpretIfStatement(IfStatement ifStmt, Environment env) {
+        var conditionValue = InterpretExpression(ifStmt.Condition, env);
 
-    // }
+        if (conditionValue is not BoolType boolCondition) {
+            throw new Exception("If statement condition must evaluate to a boolean");
+        }
+
+        if ((bool)boolCondition.Value!) {
+            foreach (var statement in ifStmt.Consequent!.Body) {
+                InterpretExpression(statement, env);
+            }
+        }
+
+        return null;
+    }
 
     private ValueType InterpretVariableDeclaration(VariableDeclarator expr, Environment env) {
         var variable = env.LookupVariable(expr.Identifier);

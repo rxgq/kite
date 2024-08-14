@@ -1,2 +1,8 @@
-mut x = true;
-let y = not x;
+mut x = 10;
+
+if x > 10 {
+    x = 1;
+}
+
+x = x + 1;
+x = y;

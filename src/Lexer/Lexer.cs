@@ -41,12 +41,26 @@ internal class Lexer(string source)
             '<' => OnLessThan(),
             '=' => OnEquals(),
 
+            '"' => OnString(),
+
             _ when char.IsDigit(c) => OnNumber(),
             _ when char.IsLetter(c) => OnLetter(),
             
             ' ' => new(TokenType.Space, Source[Current]),
             _ => new(TokenType.Bad, c)
         };
+    }
+
+    private Token OnString() {
+        int start = Current;
+
+        while (Peek() != '\"') {
+            Current++;
+            Console.Write(Peek());
+        }
+
+        Current++;
+        return new(TokenType.String, Source[start..(Current + 1)]);
     }
 
     private Token OnLessThan() {
