@@ -133,6 +133,6 @@ internal class Lexer(string source)
 
     public void Print() {
         foreach (var token in Tokens) 
-            Console.WriteLine(token.ToString());
+            Console.WriteLine($"{token.Type.ToString(), -16} {token.ToString()}");
     }
 }

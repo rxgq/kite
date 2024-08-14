@@ -87,7 +87,7 @@ public class IdentifierExpression (string symbol) : Expression(ExprType.Identifi
     public string Symbol { get; set; } = symbol;
 
     public override string ToString()
-        => $"[IDENT: {Symbol}]";
+        => $"[{Symbol}]";
 }
 
 public class UndefinedExpression(string symbol) : Expression(ExprType.UndefinedExpr) {
