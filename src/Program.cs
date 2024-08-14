@@ -1,4 +1,4 @@
-﻿namespace judas;
+﻿namespace Runic;
 
 internal abstract class Judas {
     static void Main(string[] args) {

@@ -1,6 +1,7 @@
-namespace judas;
+namespace Runic;
 
 public enum ExprType {
+    ReturnExpr,
     FunctionDeclarationExpr,
     FunctionCallExpr,
     WhileStatementExpr,
@@ -36,6 +37,13 @@ public class EchoStatement(Expression expr) : Expression(ExprType.EchoExpr) {
         => $"[echo {Value}]";
 }
 
+public class ReturnStatement(Expression value) : Expression(ExprType.ReturnExpr) {
+    public Expression Value { get; set; } = value;
+
+    public override string ToString()
+        => $"[return {Value}]";   
+}
+
 public class FunctionDeclaration(string identifier, List<string> args, BlockStatement? body = null) : Expression(ExprType.FunctionDeclarationExpr) {
     public string Identifier { get; set; } = identifier;
     public List<string> Args { get; set; } = args;
@@ -58,7 +66,7 @@ public class WhileStatement(Expression condition, BlockStatement? consequent) : 
     public BlockStatement? Consequent { get; set; } = consequent;
 
     public override string ToString()
-        => $"[while {Condition} {Consequent}]";   
+        => $"[while {Condition} {Consequent}]";
 }
 
 public class IfStatement(Expression condition, BlockStatement? consequent, IfStatement? alternate = null) : Expression(ExprType.IfStatementExpr) {

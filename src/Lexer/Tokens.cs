@@ -1,4 +1,4 @@
-namespace judas;
+namespace Runic;
 
 public enum TokenType {
     Number, 

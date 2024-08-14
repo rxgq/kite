@@ -1,4 +1,4 @@
-namespace judas;
+namespace Runic;
 
 internal class Lexer(string source)
 {

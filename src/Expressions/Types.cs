@@ -1,4 +1,4 @@
-namespace judas;
+namespace Runic;
 
 public abstract class ValueType {
     public string? Type { get; set; }

@@ -1,6 +1,4 @@
-using System.Linq.Expressions;
-
-namespace judas;
+namespace Runic;
 
 internal class Parser(List<Token> tokens) {
     public List<Token> Tokens { get; set; } = tokens;
@@ -23,9 +21,25 @@ internal class Parser(List<Token> tokens) {
             TokenType.If or TokenType.Elif or TokenType.Else => ParseIfStatement(),
             TokenType.While => ParseWhileStatement(),
             TokenType.Def => ParseFunctionDeclaration(),
+            TokenType.Return => ParseReturnStatement(),
             _ => ParseExpression(),
         };
     }
+
+    private Expression ParseReturnStatement() {
+        var returnToken = Consume();
+
+        if (Match(";")) {
+            Consume();
+            return new ReturnStatement(null);
+        }
+
+        var returnValue = ParseExpression();
+
+        ExpectToBe(TokenType.SemiColon, "Expected ';' after return statement");
+        return new ReturnStatement(returnValue);
+    }
+
 
     private Expression ParseFunctionDeclaration() {
         Advance();
