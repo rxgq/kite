@@ -20,12 +20,18 @@ public class Interpreter(Program program)
         return expr.Kind switch {
             ExprType.NumericExpr => new NumericType(((NumericExpression)expr).Value),
             ExprType.BinaryExpr => InterpretBinaryExpr((BinaryExpression)expr, env),
+            ExprType.UnaryExpr => InterpretUnaryExpression((UnaryExpression)expr, env),
             ExprType.IdentifierExpr => InterpretIdentifier((IdentifierExpression)expr, env),
             ExprType.VariableDeclaratorExpr => InterpretVariableDeclaration((VariableDeclarator)expr, env),
             ExprType.AssignmentExpr => InterpretAssignment((AssignmentExpression)expr, env),
+            //ExprType.IfStatementExpr => InterpretIfStatement((IfStatement)expr, env),
             _ => new UndefinedType(),
         };
     }
+
+    // private ValueType InterpretIfStatement(IfStatement ifStmt, Environment env) {
+
+    // }
 
     private ValueType InterpretVariableDeclaration(VariableDeclarator expr, Environment env) {
         var variable = env.LookupVariable(expr.Identifier);
@@ -64,6 +70,16 @@ public class Interpreter(Program program)
     private ValueType InterpretIdentifier(IdentifierExpression expr, Environment env) {
         return env.LookupVariable(expr.Symbol)!.Value.Item1 ?? 
             throw new Exception("Attempted to modify or reference undefined variable");
+    }
+
+    private NumericType InterpretUnaryExpression(UnaryExpression expr, Environment env) {
+        NumericType rightValue = (NumericType)InterpretExpression(expr.Right, env);
+        
+        double right = (double)rightValue.Value!;
+
+        return expr.Operator.Value switch {
+            "-" => new NumericType(-right),
+        };
     }
 
     private NumericType InterpretBinaryExpr(BinaryExpression expr, Environment env) {

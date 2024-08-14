@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 namespace judas;
 
 internal class Parser(List<Token> tokens) {
@@ -17,8 +19,33 @@ internal class Parser(List<Token> tokens) {
         return Tokens[Current].Type switch
         {
             TokenType.Let or TokenType.Mut => ParseVariableDeclaration(),
+            TokenType.If or TokenType.Elif or TokenType.Else => ParseIfStatement(),
             _ => ParseExpression(),
         };
+    }
+
+    private Expression ParseIfStatement() {
+        Advance();
+        var condition = ParseExpression();
+
+        ExpectToBe(TokenType.LeftBrace, "Expected '{' after condition");
+
+        Expression? consequent = ParseBlockStatement();
+
+        ExpectToBe(TokenType.RightBrace, "Expected '}' after condition");
+
+        return new IfStatement(condition, consequent as BlockStatement);
+    }
+
+    private Expression ParseBlockStatement() {
+        List<Expression> statements = [];
+
+        while (!Match("}")) {
+            var stmt = ParseStatement();
+            statements.Add(stmt);
+        }
+
+        return new BlockStatement(statements);
     }
 
     private Expression ParseVariableDeclaration() {
@@ -47,7 +74,29 @@ internal class Parser(List<Token> tokens) {
         return ParseAssignment();
     }
 
-    
+    // private Expression ParseLogicalOr() {
+    //     var expr = ParseLogicalAnd();
+
+    // }
+
+    // private Expression ParseLogicalAnd() {
+    //     var expr = ParseEquality();
+        
+    // }
+
+    // private Expression ParseEquality() {
+    //     var expr = ParseRelational();
+
+    // }
+
+    // private Expression ParseRelational() {
+    //     var expr = ParseUnary();
+
+    //     if (Match(">") || Match("<") || Match(">=") || Match("<=")) {
+
+    //     }
+    // }
+
     private Expression ParseAssignment() {
         var left = ParseAdditive();
         
@@ -56,7 +105,7 @@ internal class Parser(List<Token> tokens) {
 
             var val = ParseAssignment();
             ExpectToBe(TokenType.SemiColon, "Expected semi colon after assignment expression");
-
+            
             return new AssignmentExpression(left, val);
         }
 
@@ -75,13 +124,23 @@ internal class Parser(List<Token> tokens) {
 
         return left;
     }
+    
+    private Expression ParseUnary() {
+        if (Match("-") || Match("!")) {
+            var op = Consume();
+            var right = ParseUnary();
+            return new UnaryExpression(op, right);
+        }
+
+        return ParsePrimary(); 
+    }
 
     private Expression ParseMultiplicative() {
-        var left = ParsePrimary();
+        var left = ParseUnary();
 
         while (Match("*") || Match("/") || Match("%") || Match("**")) {
             var op = Consume();
-            var right = ParsePrimary();
+            var right = ParseUnary();
 
             left = new BinaryExpression(left, right, op);
         }
@@ -123,7 +182,7 @@ internal class Parser(List<Token> tokens) {
     }
 
     private Token ExpectToBe(TokenType type, string msg) {
-        if (Tokens[Current].Type != type) throw new Exception(msg);
+        if (Tokens[Current].Type != type) throw new Exception(msg + $", found {Tokens[Current].Type}");
         return Consume();
     }
 

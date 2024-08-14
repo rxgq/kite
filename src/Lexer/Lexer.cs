@@ -24,11 +24,17 @@ internal class Lexer(string source)
         return Source[Current] switch {
             '(' => new(TokenType.LeftParen, c),
             ')' => new(TokenType.RightParen, c),
+            '{' => new(TokenType.LeftBrace, c),
+            '}' => new(TokenType.RightBrace, c),
             ',' => new(TokenType.Comma, c),
             ';' => new(TokenType.SemiColon, c),
 
             '+' or '-' or '/' or '%' => new(TokenType.BinaryOp, c),
             '*' => OnStar(),
+
+            '!' => OnNot(),
+            '>' => OnGreaterThan(),
+            '<' => OnLessThan(),
             '=' => OnEquals(),
 
             _ when char.IsDigit(c) => OnNumber(),
@@ -37,6 +43,33 @@ internal class Lexer(string source)
             ' ' => new(TokenType.Space, Source[Current]),
             _ => new(TokenType.Bad, c)
         };
+    }
+
+    private Token OnLessThan() {
+        if (Peek() == '=') {
+            Advance();
+            return new(TokenType.LessThanEq, "<=");
+        }
+
+        return new(TokenType.LessThan, '<');
+    } 
+
+    private Token OnGreaterThan() {
+        if (Peek() == '=') {
+            Advance();
+            return new(TokenType.GreaterThanEq, ">=");
+        }
+
+        return new(TokenType.GreaterThan, '>');
+    } 
+
+    private Token OnNot() {
+        if (Peek() == '=') {
+            Advance();
+            return new(TokenType.NotEqual, "!=");
+        }
+
+        return new(TokenType.Not, '!');
     }
 
     private Token OnStar() {

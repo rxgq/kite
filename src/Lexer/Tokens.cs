@@ -24,11 +24,17 @@ public enum TokenType {
 
     BinaryOp, 
     Equality, 
-    NotEquality,
-    Assignment, 
+    NotEqual,
+    Assignment,
+    GreaterThan,
+    LessThan,
+    GreaterThanEq,
+    LessThanEq,
 
     LeftParen, 
     RightParen,
+    LeftBrace,
+    RightBrace,
     Comma,
     SemiColon,
 
@@ -67,6 +73,6 @@ public class Token {
         Value = value.ToString();
     }
 
-    public override string ToString() => $"{Type, -12} {Value}";
+    public override string ToString() => $"{Value}";
 }
 
