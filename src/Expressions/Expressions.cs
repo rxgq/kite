@@ -1,6 +1,9 @@
 namespace judas;
 
 public enum ExprType {
+    FunctionDeclarationExpr,
+    FunctionCallExpr,
+    WhileStatementExpr,
     IfStatementExpr,
     BlockStatementExpr,
     VariableDeclaratorExpr,
@@ -30,7 +33,32 @@ public class EchoStatement(Expression expr) : Expression(ExprType.EchoExpr) {
     public Expression Value { get; set; } = expr;
 
     public override string ToString()
-        => $"[echo {Value.ToString()}]";
+        => $"[echo {Value}]";
+}
+
+public class FunctionDeclaration(string identifier, List<string> args, BlockStatement? body = null) : Expression(ExprType.FunctionDeclarationExpr) {
+    public string Identifier { get; set; } = identifier;
+    public List<string> Args { get; set; } = args;
+    public BlockStatement? Body { get; set; } = body;
+
+    public override string ToString()
+        => $"[{Identifier}({string.Join(", ", Args.Select(arg => arg))}) {Body}]";
+}
+
+public class FunctionCall(string identifier, List<Expression> args) : Expression(ExprType.FunctionCallExpr) {
+    public string Identifier { get; set; } = identifier;
+    public List<Expression> Args { get; set; } = args;
+
+    public override string ToString()
+        => $"[{Identifier}({string.Join(", ", Args.Select(arg => arg.ToString()))})]";
+}
+
+public class WhileStatement(Expression condition, BlockStatement? consequent) : Expression(ExprType.WhileStatementExpr) {
+    public Expression Condition { get; set; } = condition;
+    public BlockStatement? Consequent { get; set; } = consequent;
+
+    public override string ToString()
+        => $"[while {Condition} {Consequent}]";   
 }
 
 public class IfStatement(Expression condition, BlockStatement? consequent, IfStatement? alternate = null) : Expression(ExprType.IfStatementExpr) {

@@ -29,6 +29,9 @@ public class Interpreter(Program program)
             ExprType.AssignmentExpr => InterpretAssignment((AssignmentExpression)expr, env),
             ExprType.LogicalExpr => InterpretLogicalExpr((LogicalExpression)expr, env),
             ExprType.IfStatementExpr => InterpretIfStatement((IfStatement)expr, env),
+            ExprType.WhileStatementExpr => InterpretWhileStatement((WhileStatement)expr, env),
+            ExprType.FunctionDeclarationExpr => InterpretFunctionDeclaration((FunctionDeclaration)expr, env),
+            ExprType.FunctionCallExpr => InterpretFunctionCall((FunctionCall)expr, env),
             ExprType.EchoExpr => InterpretEcho((EchoStatement)expr, env),
             _ => new UndefinedType(),
         };
@@ -49,13 +52,54 @@ public class Interpreter(Program program)
         return stringValue;
     }
 
+    private ValueType InterpretFunctionDeclaration(FunctionDeclaration expr, Environment env) {
+        var function = new FunctionType(expr.Identifier, expr.Args, expr.Body);
+        env.DeclareVariable(expr.Identifier, function, isMutable: false);
+        return function;
+    }
+
+    private ValueType InterpretFunctionCall(FunctionCall expr, Environment env) {
+        if (env.LookupVariable(expr.Identifier)?.Item1 is not FunctionType function)
+            throw new Exception($"Function '{expr.Identifier}' is not defined.");
+
+        var functionEnv = new Environment(env);
+
+        for (int i = 0; i < function.Args.Count; i++) {
+            var argValue = InterpretExpression(expr.Args[i], env);
+            functionEnv.DeclareVariable(function.Args[i], argValue, isMutable: false);
+        }
+
+        ValueType result = new UndefinedType();
+        foreach (var statement in function.Body.Body) {
+            result = InterpretExpression(statement, functionEnv);
+        }
+
+        return result;
+    }
+
+
+    private ValueType InterpretWhileStatement(WhileStatement whileStmt, Environment env) {
+        var conditionValue = InterpretExpression(whileStmt.Condition, env);
+
+        if (conditionValue is not BoolType boolCondition)
+            throw new Exception("While statement condition must evaluate to a boolean");
+
+        while ((bool)boolCondition!.Value!) {
+            foreach (var statement in whileStmt.Consequent!.Body) {
+                InterpretExpression(statement, env);
+            }
+
+            boolCondition = InterpretExpression(whileStmt.Condition, env) as BoolType;
+        }
+
+        return conditionValue;
+    }
 
     private ValueType InterpretIfStatement(IfStatement ifStmt, Environment env) {
         var conditionValue = InterpretExpression(ifStmt.Condition, env);
 
-        if (conditionValue is not BoolType boolCondition) {
+        if (conditionValue is not BoolType boolCondition)
             throw new Exception("If statement condition must evaluate to a boolean");
-        }
 
         if ((bool)boolCondition.Value!) {
             foreach (var statement in ifStmt.Consequent!.Body) {

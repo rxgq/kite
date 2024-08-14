@@ -5,6 +5,19 @@ public abstract class ValueType {
     public object? Value { get; set; }
 }
 
+public class FunctionType : ValueType {
+    public string Name { get; }
+    public List<string> Args { get; }
+    public BlockStatement? Body { get; }
+
+    public FunctionType(string name, List<string> args, BlockStatement? body = null) {
+        Type = "function";
+        Name = name;
+        Args = args;
+        Body = body;
+    }
+}
+
 public class UndefinedType : ValueType {
 
     public UndefinedType() {

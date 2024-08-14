@@ -1,1 +1,6 @@
-mut x232 = 2;
+def isEven(n) {
+    mut x = n % 2 == 0;
+    return x;
+}
+
+isEven(4);

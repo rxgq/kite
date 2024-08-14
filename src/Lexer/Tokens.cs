@@ -5,19 +5,20 @@ public enum TokenType {
     Identifier, 
     String,
 
-    Let,
-    Mut,
-
     True,
     False,
     Undefined,
     Default,
 
+    Let,
+    Mut,
     If,
     Elif,
     Else,
     For,
     While,
+    Def,
+    Return,
     Echo,
 
     And,
@@ -60,12 +61,14 @@ public class Token {
         { "for", TokenType.For },
         { "while", TokenType.While },
         { "and", TokenType.And },
+        { "return", TokenType.Return },
         { "or", TokenType.Or },
         { "not", TokenType.Not },
         { "true", TokenType.True },
         { "false", TokenType.False },
         { "default", TokenType.Default },
         { "undefined", TokenType.Undefined },
+        { "def", TokenType.Def },
         { "echo", TokenType.Echo },
     };
 

@@ -21,8 +21,71 @@ internal class Parser(List<Token> tokens) {
             TokenType.Echo => ParseEcho(),
             TokenType.Let or TokenType.Mut => ParseVariableDeclaration(),
             TokenType.If or TokenType.Elif or TokenType.Else => ParseIfStatement(),
+            TokenType.While => ParseWhileStatement(),
+            TokenType.Def => ParseFunctionDeclaration(),
             _ => ParseExpression(),
         };
+    }
+
+    private Expression ParseFunctionDeclaration() {
+        Advance();
+
+        var identifier = Consume();
+
+        ExpectToBe(TokenType.LeftParen, "Expected '(' after function name");
+        var args = new List<string>();
+
+        if (!Match(")")) {
+            do {
+                var arg = Consume();
+                args.Add(arg.Value);
+
+                if (Match(",")) Advance();
+                else if (Match(")")) break;
+                else throw new Exception("Expected ',' or ')' after parameter");
+            } while (true);
+        }
+
+        ExpectToBe(TokenType.RightParen, "Expected ')' after parameters");
+
+        ExpectToBe(TokenType.LeftBrace, "Expected '{' after parameters");
+        var body = (BlockStatement)ParseBlockStatement();
+        ExpectToBe(TokenType.RightBrace, "Expected '}' after function body");
+
+        return new FunctionDeclaration(identifier.Value, [.. args], body);
+    }
+
+    private Expression ParseFunctionCall(string functionName) {
+        ExpectToBe(TokenType.LeftParen, "Expected '(' after function name");
+
+        var args = new List<Expression>();
+
+        if (!Match(")")) {
+            do {
+                var arg = ParseExpression();
+                args.Add(arg);
+
+                if (Match(",")) Advance();
+                else if (Match(")")) break;
+                else throw new Exception("Expected ',' or ')' after argument");
+            } while (true);
+        }
+
+        ExpectToBe(TokenType.RightParen, "Expected ')' after function call");
+        ExpectToBe(TokenType.SemiColon, "Expected ';' after function call");
+
+        return new FunctionCall(functionName, args);
+    }
+
+    private Expression ParseWhileStatement() {
+        Advance();
+        var condition = ParseExpression();
+
+        ExpectToBe(TokenType.LeftBrace, "Expected '{' after condition");
+        var consequent = (BlockStatement)ParseBlockStatement();
+        ExpectToBe(TokenType.RightBrace, "Expected '}' after condition");
+
+        return new WhileStatement(condition, consequent);
     }
 
     private Expression ParseIfStatement() {
@@ -166,7 +229,6 @@ internal class Parser(List<Token> tokens) {
         return expr;
     }
 
-
     private Expression ParseRelational() {
         var expression = ParseAdditive();
 
@@ -209,6 +271,7 @@ internal class Parser(List<Token> tokens) {
         if (Match("-") || Match("not") || Match("~") || Match("++") || Match("--")) {
             var op = Consume();
             var right = ParseUnary();
+
             return new UnaryExpression(op, right);
         }
 
@@ -221,6 +284,9 @@ internal class Parser(List<Token> tokens) {
         switch (token.Type) {
             case TokenType.Identifier:
                 Advance();
+
+                if (Match("(")) return ParseFunctionCall(token.Value);
+
                 return new IdentifierExpression(token.Value);
             
             case TokenType.Number:

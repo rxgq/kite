@@ -21,9 +21,11 @@ internal abstract class Judas {
 
         var parser = new Parser(tokens);
         var expressions = parser.Parse();
-        //parser.Print();
+        parser.Print();
 
         var interpreter = new Interpreter(expressions);
         var result = interpreter.Interpret();
+
+        Console.Write($"RESULT: {result.Value}");
     }
 }

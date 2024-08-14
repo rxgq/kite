@@ -5,11 +5,11 @@ public class Environment(Environment? parent = null)
     public Environment? Parent { get; set; } = parent;
     public Dictionary<string, (ValueType, bool)> Variables { get; set; } = [];
 
-    public ValueType DeclareVariable(string variable, ValueType type, bool IsMutable) {
+    public ValueType DeclareVariable(string variable, ValueType type, bool isMutable) {
         if (Variables.ContainsKey(variable))
             throw new Exception("Attempted to redeclare already declared variable");
 
-        Variables[variable] = (type, IsMutable);
+        Variables[variable] = (type, isMutable);
         return type;
     }
 

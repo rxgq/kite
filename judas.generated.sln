@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.002.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "judas", "judas.csproj", "{456AD431-25C2-4536-BA56-ED0F9A7D2BBC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{456AD431-25C2-4536-BA56-ED0F9A7D2BBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{456AD431-25C2-4536-BA56-ED0F9A7D2BBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{456AD431-25C2-4536-BA56-ED0F9A7D2BBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{456AD431-25C2-4536-BA56-ED0F9A7D2BBC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E2B2FA0A-C911-483C-BC35-6239D30DC7F4}
+	EndGlobalSection
+EndGlobal
