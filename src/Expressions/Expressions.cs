@@ -14,6 +14,8 @@ public enum ExprType {
     NumericExpr,
     StringExpr,
     BoolExpr,
+
+    EchoExpr
 }
 
 public class Program {
@@ -22,6 +24,13 @@ public class Program {
 
 public abstract class Expression(ExprType kind) {
     public ExprType Kind { get; set; } = kind;
+}
+
+public class EchoStatement(Expression expr) : Expression(ExprType.EchoExpr) {
+    public Expression Value { get; set; } = expr;
+
+    public override string ToString()
+        => $"[echo {Value.ToString()}]";
 }
 
 public class IfStatement(Expression condition, BlockStatement? consequent, IfStatement? alternate = null) : Expression(ExprType.IfStatementExpr) {

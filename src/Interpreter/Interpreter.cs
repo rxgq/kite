@@ -20,6 +20,7 @@ public class Interpreter(Program program)
         return expr.Kind switch {
             ExprType.NumericExpr => new NumericType(((NumericExpression)expr).Value),
             ExprType.BoolExpr => new BoolType(((BooleanExpression)expr).Value ? "true" : "false"),
+            ExprType.StringExpr => new StringType(((StringExpression)expr).Value),
             ExprType.BinaryExpr => InterpretBinaryExpr((BinaryExpression)expr, env),
             ExprType.UnaryExpr => InterpretUnaryExpression((UnaryExpression)expr, env),
             ExprType.RelationalExpr => InterpretRelationalExpr((RelationalExpression)expr, env),
@@ -28,9 +29,26 @@ public class Interpreter(Program program)
             ExprType.AssignmentExpr => InterpretAssignment((AssignmentExpression)expr, env),
             ExprType.LogicalExpr => InterpretLogicalExpr((LogicalExpression)expr, env),
             ExprType.IfStatementExpr => InterpretIfStatement((IfStatement)expr, env),
+            ExprType.EchoExpr => InterpretEcho((EchoStatement)expr, env),
             _ => new UndefinedType(),
         };
     }
+
+    private ValueType InterpretEcho(EchoStatement expr, Environment env) {
+        var value = InterpretExpression(expr.Value, env);
+
+        var stringValue = value switch {
+            NumericType numeric => new StringType(numeric.Value.ToString()),
+            BoolType boolean => new StringType(boolean.Value.ToString()),
+            StringType str => str,
+            UndefinedType _ => new StringType("undefined"),
+            _ => throw new Exception($"Unsupported type '{value.GetType()}' for echo statement")
+        };
+
+        Console.Write(stringValue.Value);
+        return stringValue;
+    }
+
 
     private ValueType InterpretIfStatement(IfStatement ifStmt, Environment env) {
         var conditionValue = InterpretExpression(ifStmt.Condition, env);
@@ -52,8 +70,6 @@ public class Interpreter(Program program)
 
         return conditionValue;
     }
-
-
 
     private ValueType InterpretVariableDeclaration(VariableDeclarator expr, Environment env) {
         var variable = env.LookupVariable(expr.Identifier);

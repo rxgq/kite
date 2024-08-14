@@ -18,6 +18,7 @@ public enum TokenType {
     Else,
     For,
     While,
+    Echo,
 
     And,
     Or,
@@ -65,6 +66,7 @@ public class Token {
         { "false", TokenType.False },
         { "default", TokenType.Default },
         { "undefined", TokenType.Undefined },
+        { "echo", TokenType.Echo },
     };
 
     public Token(TokenType type, string value) {

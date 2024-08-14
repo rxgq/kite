@@ -18,6 +18,7 @@ internal class Parser(List<Token> tokens) {
     private Expression ParseStatement() {
         return Tokens[Current].Type switch
         {
+            TokenType.Echo => ParseEcho(),
             TokenType.Let or TokenType.Mut => ParseVariableDeclaration(),
             TokenType.If or TokenType.Elif or TokenType.Else => ParseIfStatement(),
             _ => ParseExpression(),
@@ -92,6 +93,22 @@ internal class Parser(List<Token> tokens) {
         }
         
         throw new Exception("Unexpected token found in variable declaration");
+    }
+
+    private Expression ParseEcho() {
+        Advance();
+
+        var primaryExpr = ParsePrimary();
+
+        if (primaryExpr is StringExpression stringExpr) {
+            string unquotedValue = stringExpr.Value.Trim('\"');
+            var valueStr = new StringExpression(unquotedValue);
+            Advance();
+
+            return new EchoStatement(valueStr);
+        }
+
+        throw new Exception("Expected a string literal for echo statement");
     }
 
     private Expression ParseExpression() {

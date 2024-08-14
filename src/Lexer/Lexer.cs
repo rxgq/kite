@@ -56,7 +56,6 @@ internal class Lexer(string source)
 
         while (Peek() != '\"') {
             Current++;
-            Console.Write(Peek());
         }
 
         Current++;

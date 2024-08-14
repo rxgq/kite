@@ -1,14 +1,16 @@
-mut x = true;
-mut z = 0;
+mut x = 11;
 
-if x {
-    z = z + 1;
+if x > 10 {
+    echo "X is larger than 10";
+
+    if x != 2 {
+        echo "   X is not 2";
+    }
+
+} 
+elif x == 10 {
+    echo "X is 10";
 }
-
-if not x {
-   z = z + 1;
-} else {
-    z = z + 10;
+else {
+    echo "X is less than 10";
 }
-
-z = z + 0;
