@@ -158,7 +158,7 @@ public class Interpreter(Program program)
         var variable = (IdentifierExpression)expr.Assignee;
 
         if (env.LookupVariable(variable.Symbol) is null)
-            throw new Exception("Attempted to modify or update undeclared variable");
+            throw new Exception($"Attempted to modify or update undeclared variable {variable.Symbol}");
 
         var isMutable = env.LookupVariable(variable.Symbol)!.Value.Item2;
         if (!isMutable)
@@ -174,7 +174,7 @@ public class Interpreter(Program program)
     private ValueType InterpretIdentifier(IdentifierExpression expr, Environment env) {
         var variable = env.LookupVariable(expr.Symbol);
         
-        if (variable is null) throw new Exception("Attempted to modify or reference undefined variable");
+        if (variable is null) throw new Exception($"Attempted to modify or reference undefined variable {expr.Symbol}");
         return variable.Value.Item1;
     }
 
