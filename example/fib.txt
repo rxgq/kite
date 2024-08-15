@@ -9,5 +9,3 @@ while i < 10 {
     a = b;
     b = temp;
 }
-
-b = b + 0;

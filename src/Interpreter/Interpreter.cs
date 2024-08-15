@@ -118,20 +118,29 @@ public class Interpreter(Program program)
     private ValueType InterpretVariableDeclaration(VariableDeclarator expr, Environment env) {
         var variable = env.LookupVariable(expr.Identifier);
 
-        if (variable is not null)
-            throw new Exception("Attempted to redeclare already existing variable");
+        if (variable != null) {
+            if (!variable.Value.Item2)
+                throw new Exception($"Attempted to reassign constant variable '{expr.Identifier}'");
+
+            ValueType value = expr.Value is not null
+                ? InterpretExpression(expr.Value, env)
+                : new UndefinedType();
+
+            return env.AssignVariable(expr.Identifier, value);
+        }
 
         if (expr.Declarator == "let" && expr.Value is UndefinedExpression) {
             throw new Exception("Cannot assign undefined to variable with declarator 'let'");
         }
 
-        ValueType value = expr.Value is not null 
+        ValueType initialValue = expr.Value is not null 
             ? InterpretExpression(expr.Value, env) 
             : new UndefinedType();
 
-        env.DeclareVariable(expr.Identifier, value, expr.IsMutable);
-        return value;
+        env.DeclareVariable(expr.Identifier, initialValue, expr.IsMutable);
+        return initialValue;
     }
+
 
     private ValueType InterpretAssignment(AssignmentExpression expr, Environment env) {
         var variable = (IdentifierExpression)expr.Assignee;
