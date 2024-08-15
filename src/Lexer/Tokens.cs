@@ -1,4 +1,4 @@
-namespace Runic;
+namespace Kite;
 
 public enum TokenType {
     Number, 
@@ -7,7 +7,7 @@ public enum TokenType {
 
     True,
     False,
-    Undefined,
+    Undef,
     Default,
 
     Let,
@@ -72,7 +72,7 @@ public class Token {
         { "true", TokenType.True },
         { "false", TokenType.False },
         { "default", TokenType.Default },
-        { "undefined", TokenType.Undefined },
+        { "undef", TokenType.Undef },
         { "def", TokenType.Def },
         { "echo", TokenType.Echo },
     };

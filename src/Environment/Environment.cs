@@ -1,4 +1,4 @@
-namespace Runic;
+namespace Kite;
 
 public class Environment(Environment? parent = null)
 {

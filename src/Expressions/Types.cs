@@ -1,4 +1,4 @@
-namespace Runic;
+namespace Kite;
 
 public abstract class ValueType {
     public string? Type { get; set; }

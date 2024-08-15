@@ -1,4 +1,4 @@
-namespace Runic;
+namespace Kite;
 
 internal class Lexer(string source)
 {

@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Runic;
+namespace Kite;
 
 public class Interpreter(Program program)
 {
@@ -141,7 +141,7 @@ public class Interpreter(Program program)
             return env.AssignVariable(expr.Identifier, value);
         }
 
-        if (expr.Declarator == "let" && expr.Value is UndefinedExpression) {
+        if (expr.Declarator == "let" && expr.Value is UndefExpression) {
             throw new Exception("Cannot assign undefined to variable with declarator 'let'");
         }
 

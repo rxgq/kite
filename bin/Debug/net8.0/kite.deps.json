@@ -6,15 +6,15 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v8.0": {
-      "Judas/1.0.0": {
+      "kite/1.0.0": {
         "runtime": {
-          "Judas.dll": {}
+          "kite.dll": {}
         }
       }
     }
   },
   "libraries": {
-    "Judas/1.0.0": {
+    "kite/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

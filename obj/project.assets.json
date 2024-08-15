@@ -14,9 +14,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\adunderdale\\Projects\\personal\\judas\\Judas.csproj",
-      "projectName": "Judas",
-      "projectPath": "C:\\Users\\adunderdale\\Projects\\personal\\judas\\Judas.csproj",
+      "projectUniqueName": "C:\\Users\\adunderdale\\Projects\\personal\\judas\\kite.csproj",
+      "projectName": "kite",
+      "projectPath": "C:\\Users\\adunderdale\\Projects\\personal\\judas\\kite.csproj",
       "packagesPath": "C:\\Users\\adunderdale\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\adunderdale\\Projects\\personal\\judas\\obj\\",
       "projectStyle": "PackageReference",

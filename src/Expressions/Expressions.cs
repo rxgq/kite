@@ -1,4 +1,4 @@
-namespace Runic;
+namespace Kite;
 
 public enum ExprType {
     ReturnExpr,
@@ -16,7 +16,7 @@ public enum ExprType {
     RelationalExpr,
     UnaryExpr,
     IdentifierExpr,
-    UndefinedExpr,
+    UndefExpr,
     NumericExpr,
     StringExpr,
     BoolExpr,
@@ -157,11 +157,11 @@ public class IdentifierExpression (string symbol) : Expression(ExprType.Identifi
         => $"[{Symbol}]";
 }
 
-public class UndefinedExpression(string symbol) : Expression(ExprType.UndefinedExpr) {
+public class UndefExpression(string symbol) : Expression(ExprType.UndefExpr) {
     public string Symbol { get; set; } = symbol;
 
     public override string ToString()
-        => $"[Undefined]";
+        => $"[Undef]";
 }
 
 public class NumericExpression(float value) : Expression(ExprType.NumericExpr) {

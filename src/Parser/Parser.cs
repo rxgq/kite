@@ -1,4 +1,4 @@
-namespace Runic;
+namespace Kite;
 
 internal class Parser(List<Token> tokens) {
     public List<Token> Tokens { get; set; } = tokens;
@@ -330,9 +330,9 @@ internal class Parser(List<Token> tokens) {
                 Advance();
                 return new StringExpression(token.Value);
 
-            case TokenType.Undefined:
+            case TokenType.Undef:
                 Advance();
-                return new UndefinedExpression(Tokens[Current].Value);
+                return new UndefExpression(Tokens[Current].Value);
 
             case TokenType.False or TokenType.True:
                 Advance();
