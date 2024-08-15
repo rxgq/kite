@@ -17,7 +17,7 @@ internal abstract class Judas {
 
         var lexer = new Lexer(source);
         var tokens = lexer.Tokenize();
-        //lexer.Print();
+        lexer.Print();
 
         var parser = new Parser(tokens);
         var expressions = parser.Parse();
@@ -25,7 +25,5 @@ internal abstract class Judas {
 
         var interpreter = new Interpreter(expressions);
         var result = interpreter.Interpret();
-
-        Console.Write($"RESULT: {result.Value}");
     }
 }

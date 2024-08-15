@@ -30,11 +30,11 @@ public abstract class Expression(ExprType kind) {
     public ExprType Kind { get; set; } = kind;
 }
 
-public class EchoStatement(Expression expr) : Expression(ExprType.EchoExpr) {
-    public Expression Value { get; set; } = expr;
+public class EchoStatement(List<Expression> values) : Expression(ExprType.EchoExpr) {
+    public List<Expression> Values { get; } = values;
 
     public override string ToString()
-        => $"[echo {Value}]";
+        => $"[echo {string.Join(", ", Values.Select(arg => arg))}]";   
 }
 
 public class ReturnStatement(Expression value) : Expression(ExprType.ReturnExpr) {

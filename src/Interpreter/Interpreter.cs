@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace Runic;
 
 public class Interpreter(Program program)
@@ -38,18 +40,24 @@ public class Interpreter(Program program)
     }
 
     private ValueType InterpretEcho(EchoStatement expr, Environment env) {
-        var value = InterpretExpression(expr.Value, env);
+        var output = new StringBuilder();
 
-        var stringValue = value switch {
-            NumericType numeric => new StringType(numeric.Value.ToString()),
-            BoolType boolean => new StringType(boolean.Value.ToString()),
-            StringType str => str,
-            UndefinedType _ => new StringType("undefined"),
-            _ => throw new Exception($"Unsupported type '{value.GetType()}' for echo statement")
-        };
+        foreach (var valueExpr in expr.Values) {
+            var value = InterpretExpression(valueExpr, env);
 
-        Console.Write(stringValue.Value);
-        return stringValue;
+            var stringValue = value switch {
+                NumericType numeric => numeric.Value.ToString(),
+                BoolType boolean => boolean.Value.ToString(),
+                StringType str => str.Value,
+                UndefinedType _ => "undefined",
+                _ => throw new Exception($"Unsupported type '{value.GetType()}' for echo statement")
+            };
+
+            output.Append(stringValue);
+        }
+
+        Console.WriteLine(output.ToString());
+        return new StringType(output.ToString());
     }
 
     private ValueType InterpretFunctionDeclaration(FunctionDeclaration expr, Environment env) {
@@ -160,8 +168,10 @@ public class Interpreter(Program program)
     }
 
     private ValueType InterpretIdentifier(IdentifierExpression expr, Environment env) {
-        return env.LookupVariable(expr.Symbol)!.Value.Item1 ?? 
-            throw new Exception("Attempted to modify or reference undefined variable");
+        var variable = env.LookupVariable(expr.Symbol);
+        
+        if (variable is null) throw new Exception("Attempted to modify or reference undefined variable");
+        return variable.Value.Item1;
     }
 
     private ValueType InterpretUnaryExpression(UnaryExpression expr, Environment env) {
@@ -173,8 +183,8 @@ public class Interpreter(Program program)
             return expr.Operator.Value switch {
                 "-" => new NumericType(-right),
                 "~" => new NumericType(~(int)right),
-                "++" => new NumericType(++right),
-                "--" => new NumericType(--right),
+                "++" => new NumericType(right + 1),
+                "--" => new NumericType(right - 1),
                 _ => throw new Exception($"Unexpected numeric unary operator '{expr.Operator.Value}'"),
             };
         }

@@ -95,6 +95,11 @@ internal class Lexer(string source)
             return new(TokenType.Inc, "++");
         }
 
+        if (Peek() == '=') {
+            Advance();
+            return new(TokenType.CompoundBinOp, "+=");
+        }
+
         return new(TokenType.BinaryOp, '+');
     }
 
@@ -104,6 +109,11 @@ internal class Lexer(string source)
             return new(TokenType.Dec, "--");
         }
 
+        if (Peek() == '=') {
+            Advance();
+            return new(TokenType.CompoundBinOp, "-=");
+        }
+
         return new(TokenType.BinaryOp, '-');
     }
 
@@ -111,6 +121,11 @@ internal class Lexer(string source)
         if (Peek() == '*') {
             Advance();
             return new(TokenType.BinaryOp, "**");
+        }
+
+        if (Peek() == '=') {
+            Advance();
+            return new(TokenType.CompoundBinOp, "*=");
         }
 
         return new(TokenType.BinaryOp, '*');

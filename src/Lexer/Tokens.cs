@@ -33,6 +33,7 @@ public enum TokenType {
     LessThan,
     GreaterThanEq,
     LessThanEq,
+    CompoundBinOp,
     Inc,
     Dec,
 

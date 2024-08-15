@@ -175,18 +175,21 @@ internal class Parser(List<Token> tokens) {
     private Expression ParseEcho() {
         Advance();
 
-        var primaryExpr = ParsePrimary();
+        var expressions = new List<Expression>();
 
-        if (primaryExpr is StringExpression stringExpr) {
-            string unquotedValue = stringExpr.Value.Trim('\"');
-            var valueStr = new StringExpression(unquotedValue);
-            Advance();
+        do {
+            var primaryExpr = ParsePrimary();
+            expressions.Add(primaryExpr);
 
-            return new EchoStatement(valueStr);
-        }
+            if (Tokens[Current].Type == TokenType.Comma) Advance();
+            else break;
+        } while (true);
 
-        throw new Exception("Expected a string literal for echo statement");
+        ExpectToBe(TokenType.SemiColon, "Expected semi colon after 'echo'");
+
+        return new EchoStatement(expressions);
     }
+
 
     private Expression ParseExpression() {
         return ParseAssignment();
@@ -198,7 +201,7 @@ internal class Parser(List<Token> tokens) {
         if (Tokens[Current].Type == TokenType.Assignment) {
             Advance();
 
-            var val = ParseAssignment();
+            var val = ParseAssignment(); 
             ExpectToBe(TokenType.SemiColon, "Expected semi colon after assignment expression");
             
             return new AssignmentExpression(left, val);
