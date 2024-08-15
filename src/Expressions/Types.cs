@@ -49,3 +49,12 @@ public class BoolType : ValueType {
         Value = val == "true";
     }
 }
+
+// used for statements such as 'skip' and 'halt'
+public class SpecialType : ValueType {
+
+    public SpecialType(string val) {
+        Type = "special";
+        Value = val;
+    }
+}

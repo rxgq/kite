@@ -1,1 +1,7 @@
+while true {
+    echo "a";
+    skip;
+    echo "b";
+}
+
 echo "Hello World!";

@@ -17,11 +17,11 @@ internal abstract class Runic {
 
         var lexer = new Lexer(source);
         var tokens = lexer.Tokenize();
-        //lexer.Print();
+        lexer.Print();
 
         var parser = new Parser(tokens);
         var expressions = parser.Parse();
-        //parser.Print();
+        parser.Print();
 
         var interpreter = new Interpreter(expressions);
         var result = interpreter.Interpret();

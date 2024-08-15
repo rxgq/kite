@@ -18,26 +18,26 @@ public class Interpreter(Program program)
         return last;
     }
 
-    private ValueType InterpretExpression(Expression expr, Environment env) {
-        return expr.Kind switch {
-            ExprType.NumericExpr => new NumericType(((NumericExpression)expr).Value),
-            ExprType.BoolExpr => new BoolType(((BooleanExpression)expr).Value ? "true" : "false"),
-            ExprType.StringExpr => new StringType(((StringExpression)expr).Value),
-            ExprType.BinaryExpr => InterpretBinaryExpr((BinaryExpression)expr, env),
-            ExprType.UnaryExpr => InterpretUnaryExpression((UnaryExpression)expr, env),
-            ExprType.RelationalExpr => InterpretRelationalExpr((RelationalExpression)expr, env),
-            ExprType.IdentifierExpr => InterpretIdentifier((IdentifierExpression)expr, env),
-            ExprType.VariableDeclaratorExpr => InterpretVariableDeclaration((VariableDeclarator)expr, env),
-            ExprType.AssignmentExpr => InterpretAssignment((AssignmentExpression)expr, env),
-            ExprType.LogicalExpr => InterpretLogicalExpr((LogicalExpression)expr, env),
-            ExprType.IfStatementExpr => InterpretIfStatement((IfStatement)expr, env),
-            ExprType.WhileStatementExpr => InterpretWhileStatement((WhileStatement)expr, env),
-            ExprType.FunctionDeclarationExpr => InterpretFunctionDeclaration((FunctionDeclaration)expr, env),
-            ExprType.FunctionCallExpr => InterpretFunctionCall((FunctionCall)expr, env),
-            ExprType.EchoExpr => InterpretEcho((EchoStatement)expr, env),
-            _ => new UndefinedType(),
-        };
-    }
+    private ValueType InterpretExpression(Expression expr, Environment env) => expr.Kind switch {
+        ExprType.NumericExpr => new NumericType(((NumericExpression)expr).Value),
+        ExprType.BoolExpr => new BoolType(((BooleanExpression)expr).Value ? "true" : "false"),
+        ExprType.StringExpr => new StringType(((StringExpression)expr).Value),
+        ExprType.HaltExpr => new SpecialType("halt"),
+        ExprType.SkipExpr => new SpecialType("skip"),
+        ExprType.BinaryExpr => InterpretBinaryExpr((BinaryExpression)expr, env),
+        ExprType.UnaryExpr => InterpretUnaryExpression((UnaryExpression)expr, env),
+        ExprType.RelationalExpr => InterpretRelationalExpr((RelationalExpression)expr, env),
+        ExprType.IdentifierExpr => InterpretIdentifier((IdentifierExpression)expr, env),
+        ExprType.VariableDeclaratorExpr => InterpretVariableDeclaration((VariableDeclarator)expr, env),
+        ExprType.AssignmentExpr => InterpretAssignment((AssignmentExpression)expr, env),
+        ExprType.LogicalExpr => InterpretLogicalExpr((LogicalExpression)expr, env),
+        ExprType.IfStatementExpr => InterpretIfStatement((IfStatement)expr, env),
+        ExprType.WhileStatementExpr => InterpretWhileStatement((WhileStatement)expr, env),
+        ExprType.FunctionDeclarationExpr => InterpretFunctionDeclaration((FunctionDeclaration)expr, env),
+        ExprType.FunctionCallExpr => InterpretFunctionCall((FunctionCall)expr, env),
+        ExprType.EchoExpr => InterpretEcho((EchoStatement)expr, env),
+        _ => new UndefinedType(),
+    };
 
     private ValueType InterpretEcho(EchoStatement expr, Environment env) {
         var output = new StringBuilder();
@@ -85,7 +85,6 @@ public class Interpreter(Program program)
         return result;
     }
 
-
     private ValueType InterpretWhileStatement(WhileStatement whileStmt, Environment env) {
         var conditionValue = InterpretExpression(whileStmt.Condition, env);
 
@@ -94,7 +93,12 @@ public class Interpreter(Program program)
 
         while ((bool)boolCondition!.Value!) {
             foreach (var statement in whileStmt.Consequent!.Body) {
-                InterpretExpression(statement, env);
+                var expr = InterpretExpression(statement, env);
+            
+                if (expr is SpecialType special) {
+                    if (special.Value == "halt") return expr;
+                    if (special.Value == "skip") break;
+                }
             }
 
             boolCondition = InterpretExpression(whileStmt.Condition, env) as BoolType;

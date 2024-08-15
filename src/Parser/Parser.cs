@@ -13,17 +13,30 @@ internal class Parser(List<Token> tokens) {
         return Program;
     }
 
-    private Expression ParseStatement() {
-        return Tokens[Current].Type switch
-        {
-            TokenType.Echo => ParseEcho(),
-            TokenType.Let or TokenType.Mut => ParseVariableDeclaration(),
-            TokenType.If or TokenType.Elif or TokenType.Else => ParseIfStatement(),
-            TokenType.While => ParseWhileStatement(),
-            TokenType.Def => ParseFunctionDeclaration(),
-            TokenType.Return => ParseReturnStatement(),
-            _ => ParseExpression(),
-        };
+    private Expression ParseStatement() => Tokens[Current].Type switch {
+        TokenType.Echo => ParseEcho(),
+        TokenType.Let or TokenType.Mut => ParseVariableDeclaration(),
+        TokenType.If or TokenType.Elif or TokenType.Else => ParseIfStatement(),
+        TokenType.While => ParseWhileStatement(),
+        TokenType.Def => ParseFunctionDeclaration(),
+        TokenType.Return => ParseReturnStatement(),
+        TokenType.Skip => ParseSkipStatement(),
+        TokenType.Halt => ParseHaltStatement(),
+        _ => ParseExpression(),
+    };
+
+    private Expression ParseSkipStatement() {
+        Advance();
+        ExpectToBe(TokenType.SemiColon, "Expected semi colon after 'skip'");
+
+        return new SkipStatement();
+    }
+
+    private Expression ParseHaltStatement() {
+        Advance();
+        ExpectToBe(TokenType.SemiColon, "Expected semi colon after 'halt'");
+
+        return new HaltStatement();
     }
 
     private Expression ParseReturnStatement() {

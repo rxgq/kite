@@ -2,6 +2,8 @@ namespace Runic;
 
 public enum ExprType {
     ReturnExpr,
+    SkipExpr,
+    HaltExpr,
     FunctionDeclarationExpr,
     FunctionCallExpr,
     WhileStatementExpr,
@@ -42,6 +44,16 @@ public class ReturnStatement(Expression? value) : Expression(ExprType.ReturnExpr
 
     public override string ToString()
         => $"[return {Value}]";
+}
+
+public class SkipStatement() : Expression(ExprType.SkipExpr) {
+    public override string ToString()
+        => $"[skip]";
+}
+
+public class HaltStatement() : Expression(ExprType.HaltExpr) {
+    public override string ToString()
+        => $"[halt]";
 }
 
 public class FunctionDeclaration(string identifier, List<string> args, BlockStatement? body = null) : Expression(ExprType.FunctionDeclarationExpr) {

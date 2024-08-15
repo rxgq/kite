@@ -63,6 +63,8 @@ public class Token {
         { "else", TokenType.Else },
         { "for", TokenType.For },
         { "while", TokenType.While },
+        { "skip", TokenType.Skip },
+        { "halt", TokenType.Halt },
         { "and", TokenType.And },
         { "return", TokenType.Return },
         { "or", TokenType.Or },
