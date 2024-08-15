@@ -1,6 +1,6 @@
 ﻿namespace Runic;
 
-internal abstract class Judas {
+internal abstract class Runic {
     static void Main(string[] args) {
         if (args.Length == 0) {
             Console.WriteLine("Usage: dotnet run -- <path_to_code>");
@@ -17,11 +17,11 @@ internal abstract class Judas {
 
         var lexer = new Lexer(source);
         var tokens = lexer.Tokenize();
-        lexer.Print();
+        //lexer.Print();
 
         var parser = new Parser(tokens);
         var expressions = parser.Parse();
-        parser.Print();
+        //parser.Print();
 
         var interpreter = new Interpreter(expressions);
         var result = interpreter.Interpret();

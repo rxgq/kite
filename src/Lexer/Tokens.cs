@@ -20,6 +20,8 @@ public enum TokenType {
     Def,
     Return,
     Echo,
+    Skip,
+    Halt,
 
     And,
     Or,

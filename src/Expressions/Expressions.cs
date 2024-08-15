@@ -37,11 +37,11 @@ public class EchoStatement(List<Expression> values) : Expression(ExprType.EchoEx
         => $"[echo {string.Join(", ", Values.Select(arg => arg))}]";   
 }
 
-public class ReturnStatement(Expression value) : Expression(ExprType.ReturnExpr) {
-    public Expression Value { get; set; } = value;
+public class ReturnStatement(Expression? value) : Expression(ExprType.ReturnExpr) {
+    public Expression? Value { get; set; } = value;
 
     public override string ToString()
-        => $"[return {Value}]";   
+        => $"[return {Value}]";
 }
 
 public class FunctionDeclaration(string identifier, List<string> args, BlockStatement? body = null) : Expression(ExprType.FunctionDeclarationExpr) {

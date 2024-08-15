@@ -59,7 +59,7 @@ internal class Lexer(string source)
         }
 
         Current++;
-        return new(TokenType.String, Source[start..(Current + 1)]);
+        return new(TokenType.String, Source[(start + 1)..(Current)]);
     }
 
     private Token OnLessThan() {
