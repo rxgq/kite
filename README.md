@@ -25,3 +25,29 @@ Note that variables declared with `let` cannot be initiated with `undef` as they
 ```
 let x = undef;    // invalid
 ```
+
+## Control Flow Statements
+
+'If' statements provide a basis for control flow and are as follows.
+
+```
+if true {
+    // condition is true
+} else {
+    // condition is false
+}
+```
+
+<br>
+
+'While' loop statements are executed while a given condition remains true.
+
+```
+mut count = 1;
+
+while count <= 5 {
+    echo count;
+    count = count + 1;
+}  // 1, 2, 3, 4, 5
+```
+
