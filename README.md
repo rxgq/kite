@@ -1,6 +1,6 @@
 # kite
 
-Kite is a statically typed, expressive, interpreted programming language.
+Kite is a statically typed, elegant, interpreted programming language.
 
 ## Declarations
 
