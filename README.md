@@ -1,6 +1,6 @@
-# runic
+# kite
 
-Runic is a statically typed, expressive, interpreted programming language.
+Kite is a statically typed, expressive, interpreted programming language.
 
 ## Declarations
 
