@@ -15,13 +15,13 @@ Variables declared with `let` are _constant_, whereas `mut` permits the variable
 
 <br>
 
-Variables can be assigned as `undefined` to specify that a variable has not been fully initialised.
+Variables can be assigned as `undef` to specify that a variable has not been fully initialised.
 ```
-mut x = undefined;
+mut x = undef;
 ```
 
-Note that variables declared with `let` cannot be initiated with `undefined` as they are constant.
+Note that variables declared with `let` cannot be initiated with `undef` as they are constant.
 
 ```
-let x = undefined;    // invalid
+let x = undef;    // invalid
 ```
